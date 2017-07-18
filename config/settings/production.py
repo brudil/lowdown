@@ -45,15 +45,10 @@ CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = 'DENY'
 
-
-STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
-MEDIA_ROOT = os.path.join(ROOT_DIR, 'mediafiles')
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
-DATABASES['default'] = env.db('DATABASE_URL')
 
 
 RAVEN_CONFIG = {
