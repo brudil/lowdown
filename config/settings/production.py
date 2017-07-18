@@ -1,13 +1,13 @@
+import os
+
 from .base import *
-import dj_database_url
+
 
 DEBUG = False
 
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
-
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',
+    'gunicorn',
 )
 
 
@@ -32,6 +32,19 @@ CORS_ORIGIN_WHITELIST = (
     'theprate.herokuapp.com',
 )
 
+SECURE_HSTS_SECONDS = 60
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
+    'DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', default=True)
+SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
+    'DJANGO_SECURE_CONTENT_TYPE_NOSNIFF', default=True)
+SECURE_BROWSER_XSS_FILTER = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SECURE_SSL_REDIRECT = env.bool('DJANGO_SECURE_SSL_REDIRECT', default=True)
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+X_FRAME_OPTIONS = 'DENY'
+
 
 STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(ROOT_DIR, 'mediafiles')
@@ -39,6 +52,9 @@ STATIC_URL = '/static/'
 
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+DATABASES['default'] = env.db('DATABASE_URL')
+
 
 RAVEN_CONFIG = {
     'dsn': 'https://ab65a1f98f1541c884de75dc63332cbb:81462565e6bc4421bfd36c07cfe105e1@app.getsentry.com/89717',
