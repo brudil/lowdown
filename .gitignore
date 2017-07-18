@@ -1,0 +1,8 @@
+.idea
+node_modules
+env
+__pycache__
+server/db.sqlite3
+media
+db.sqlite3
+.keys
