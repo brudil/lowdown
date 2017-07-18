@@ -68,11 +68,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '_1v8)5bw9hkosr%#ml^)=!p1bz7$rum)2xddkcai9-k^0a#02*'
-
-
 ALLOWED_HOSTS = []
 
 LOGGING = {
