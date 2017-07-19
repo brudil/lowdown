@@ -14,6 +14,7 @@ INSTALLED_APPS += (
 ALLOWED_HOSTS += (
     '.herokuapp.com',
     'platform.theprate.com',
+    'platform.thedrab.com',
 )
 
 # CORS_ORIGIN_ALLOW_ALL = True
@@ -28,7 +29,7 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
     'localhost',
     'theprate-staging.herokuapp.com',
-    'jetpath.surge.sh',
+    'jetpath.theprate.com',
     'theprate.herokuapp.com',
 )
 
