@@ -32,6 +32,7 @@ CORS_ORIGIN_WHITELIST = (
     'jetpath.theprate.com',
     'theprate.herokuapp.com',
 )
+JWT_AUTH['JWT_VERIFY_EXPIRATION'] = False
 
 SECURE_HSTS_SECONDS = 60
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
