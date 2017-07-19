@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'taggit',
+    'graphene_django',
 
     # core
     'lowdown.core.verticals',
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'lowdown.core.topics',
     'lowdown.core.multimedia',
     'lowdown.core.content',
+    'lowdown.core.authors',
 
     # manage
     'lowdown.manage.verticals',
@@ -47,12 +49,14 @@ INSTALLED_APPS = [
     'lowdown.manage.series',
     'lowdown.manage.sections',
     'lowdown.manage.topics',
+    'lowdown.manage.authors',
     'lowdown.manage.multimedia',
     'lowdown.manage.content',
     'lowdown.manage.notifications',
 
     # publisher
     'lowdown.publisher.content',
+    'lowdown.publisher.schema',
 ]
 
 MIDDLEWARE = [
@@ -181,7 +185,7 @@ CACHES = {
 }
 
 GRAPHENE = {
-    'SCHEMA': 'falmer.schema.schema.schema'
+    'SCHEMA': 'lowdown.publisher.schema.schema.schema'
 }
 
 REST_FRAMEWORK = {

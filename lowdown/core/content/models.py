@@ -46,7 +46,7 @@ class Content(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     published_revision = models.ForeignKey('content.ContentRevision', null=True, blank=True, related_name='published')
-    published_slug = models.SlugField(null=True, blank=True, unique=True)
+    published_slug = models.SlugField(null=True, blank=True, unique=False)
 
     published_date = models.DateTimeField(null=True)
     published_updated_date = models.DateTimeField(null=True)
@@ -89,7 +89,8 @@ class ContentRevision(models.Model):
     series = models.ForeignKey('series.Series', null=True, blank=True,  default=None, related_name='content_revisions')
     section = models.ForeignKey('sections.Section', null=True, blank=True, default=None, related_name='content_revisions')
     topics = models.ManyToManyField('topics.Topic', blank=True, related_name='content_revisions')
-    authors = models.ManyToManyField('users.LowdownUser', blank=True, related_name='content_revisions')
+    users = models.ManyToManyField('users.LowdownUser', blank=True, related_name='content_revisions')
+    authors = models.ManyToManyField('authors.Author', blank=True, related_name='content_revisions')
 
     headline = models.TextField(null=False)
     short_headline = models.TextField(null=False, blank=True)

@@ -15,8 +15,13 @@ class VerticalManager:
         for vertical in self.verticals:
             d[vertical.identifier] = vertical
 
+        return d
+
     def get_by_identifier(self, identifier):
-        return self.verticals_by_key()[identifier]
+        try:
+            return self.verticals_by_key()[identifier]
+        except KeyError:
+            return None
 
     def get_identifier_choices(self):
         l = [(v.identifier, v.name) for v in self.verticals]

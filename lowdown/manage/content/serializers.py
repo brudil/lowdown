@@ -6,7 +6,9 @@ from lowdown.manage.series.serializers import SeriesSerializer
 from lowdown.manage.sections.serializers import SectionSerializer
 from lowdown.manage.topics.serializers import TopicSerializer
 from lowdown.manage.users.serializers import UserSerializer
+from lowdown.manage.authors.serializers import AuthorSerializer
 from lowdown.core.users.models import LowdownUser
+from lowdown.core.authors.models import Author
 from rest_framework import serializers
 
 
@@ -17,8 +19,8 @@ class ContentRevisionSerializer(serializers.ModelSerializer):
     series = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Series.objects.all())
     topics_nest = TopicSerializer(read_only=True, many=True, source='topics')
     topics = serializers.PrimaryKeyRelatedField(many=True, queryset=Topic.objects.all())
-    authors_nest = UserSerializer(read_only=True, many=True, source='authors')
-    authors = serializers.PrimaryKeyRelatedField(write_only=True, many=True, queryset=LowdownUser.objects.all())
+    authors_nest = AuthorSerializer(read_only=True, many=True, source='authors')
+    authors = serializers.PrimaryKeyRelatedField(many=True, queryset=Author.objects.all())
 
     class Meta:
         model = ContentRevision
@@ -58,7 +60,7 @@ class ContentRevisionLocalSerializer(serializers.ModelSerializer):
     section = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Section.objects.all())
     series = serializers.PrimaryKeyRelatedField(required=False, allow_null=True, queryset=Series.objects.all())
     topics = serializers.PrimaryKeyRelatedField(many=True, queryset=Topic.objects.all())
-    authors = serializers.PrimaryKeyRelatedField(many=True, queryset=LowdownUser.objects.all())
+    authors = serializers.PrimaryKeyRelatedField(many=True, queryset=Author.objects.all())
 
     class Meta:
         model = ContentRevision
@@ -85,7 +87,7 @@ class ContentRevisionLocalSerializer(serializers.ModelSerializer):
 
 
 class ContentRevisionListSerializer(serializers.ModelSerializer):
-    authors = UserSerializer(read_only=True, many=True)
+    authors = AuthorSerializer(read_only=True, many=True)
 
     class Meta:
         model = ContentRevision

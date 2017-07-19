@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework_jwt.views import obtain_jwt_token
+from graphene_django.views import GraphQLView
 
 # manage
 from lowdown.manage.content import urls as manage_content_urls
@@ -27,6 +29,7 @@ from lowdown.manage.sections import urls as manage_sections_urls
 from lowdown.manage.sections.views import ListCreateSection
 from lowdown.manage.multimedia.views import ListCreateMultimedia
 from lowdown.manage.multimedia import urls as manage_multimedia_urls
+from lowdown.manage.authors import urls as manage_authors_urls
 from lowdown.manage.verticals import urls as manage_verticals_urls
 
 # publisher
@@ -36,7 +39,6 @@ inner_verticals = [
     url(r'^content/$', ListCreateContent.as_view()),
     url(r'^media/$', ListCreateMultimedia.as_view()),
     url(r'^sections/$', ListCreateSection.as_view()),
-
 ]
 
 manage_patterns = [
@@ -46,6 +48,7 @@ manage_patterns = [
     url(r'^topics/', include(manage_topics_urls)),
     url(r'^sections/', include(manage_sections_urls)),
     url(r'^media/', include(manage_multimedia_urls)),
+    url(r'^authors/', include(manage_authors_urls)),
     url(r'^content/', include(manage_content_urls)),
     url(r'^verticals/', include(manage_verticals_urls)),
     url(r'^verticals/(?P<vertical>\w+)/', include(inner_verticals)),
@@ -59,6 +62,6 @@ urlpatterns = [
     url(r'^dj-admin/', admin.site.urls),
     url(r'^manage/', include(manage_patterns)),
     url(r'^@(?P<vertical>\w+)/', include(publisher_patterns)),
-
+    url(r'^graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
