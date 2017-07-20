@@ -39,16 +39,16 @@ inner_verticals = [
     url(r'^content/$', ListCreateContent.as_view()),
     url(r'^media/$', ListCreateMultimedia.as_view()),
     url(r'^sections/$', ListCreateSection.as_view()),
+    url(r'^topics/', include(manage_topics_urls)),
+    url(r'^authors/', include(manage_authors_urls)),
 ]
 
 manage_patterns = [
     url(r'^auth/login/', obtain_jwt_token),
     url(r'^users/', include(manage_users_urls)),
     url(r'^notifications/', include(manage_notifications_urls)),
-    url(r'^topics/', include(manage_topics_urls)),
     url(r'^sections/', include(manage_sections_urls)),
     url(r'^media/', include(manage_multimedia_urls)),
-    url(r'^authors/', include(manage_authors_urls)),
     url(r'^content/', include(manage_content_urls)),
     url(r'^verticals/', include(manage_verticals_urls)),
     url(r'^verticals/(?P<vertical>\w+)/', include(inner_verticals)),

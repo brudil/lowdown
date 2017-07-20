@@ -133,16 +133,16 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-STATIC_ROOT = ROOT_DIR('staticfiles')
-STATIC_URL = 'static/'
+STATIC_ROOT = str(APPS_DIR('staticfiles'))
+STATIC_URL = '/static/'
 STATICFILES_DIRS = []
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-MEDIA_ROOT = ROOT_DIR('media')
-MEDIA_URL = 'media/'
+MEDIA_ROOT = str(APPS_DIR('media'))
+MEDIA_URL = '/media/'
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
