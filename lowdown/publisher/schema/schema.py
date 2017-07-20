@@ -68,9 +68,13 @@ class ResourceMap(ObjectType):
     lowdownimages = graphene.List(MultimediaImage)
 
     def resolve_lowdownimages(self, args, context, info):
-        return self.lowdownimage
+        try:
+            return self.lowdownimage
+        except AttributeError:
+            return None
 
-class ContentContent(DjangoObjectType):
+
+    class ContentContent(DjangoObjectType):
     class Meta:
         model = content_models.ContentRevision
 
