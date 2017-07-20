@@ -74,7 +74,7 @@ class ResourceMap(ObjectType):
             return None
 
 
-    class ContentContent(DjangoObjectType):
+class ContentContent(DjangoObjectType):
     class Meta:
         model = content_models.ContentRevision
 
