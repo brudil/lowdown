@@ -32,6 +32,7 @@ class VerticalManager:
 class ThePrate(Vertical):
     name = 'The Prate'
     identifier = 'theprate'
+    audience = 'Humorous, yet genuine, content'
 
     content_forms = [
         constants.FORM_ARTICLE,
@@ -49,6 +50,7 @@ class ThePrate(Vertical):
 class TheDrab(Vertical):
     name = 'The Drab'
     identifier = 'thedrab'
+    audience = 'new media satire'
 
     content_forms = [
         constants.FORM_ARTICLE,
