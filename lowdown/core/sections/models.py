@@ -13,9 +13,13 @@ class Section(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, default=None)
 
     title = models.TextField(null=False)
-    slug = models.SlugField(unique=True, null=False, blank=False)
+    slug = models.SlugField(unique=False, null=False, blank=False)
 
     deleted = models.BooleanField(default=False)
+
+
+    class Meta:
+        unique_together = ('vertical', 'slug',)
 
     def __str__(self):
         return self.title

@@ -11,9 +11,12 @@ class Topic(models.Model):
     section = models.ForeignKey('sections.Section', null=False)
 
     title = models.TextField(null=False)
-    slug = models.SlugField(unique=True, null=False, blank=False)
+    slug = models.SlugField(null=False, blank=False)
 
     deleted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('section', 'slug',)
 
     def __str__(self):
         return self.title
