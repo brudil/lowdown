@@ -115,7 +115,7 @@ class Vertical(ObjectType):
     content = graphene.Field(Content, content_id=graphene.Int())
 
     def resolve_all_content(self, args, context, info):
-        return content_models.Content.objects.filter(vertical=self.identifier, published_revision__isnull=False)
+        return content_models.Content.objects.filter(vertical=self.identifier, published_revision__isnull=False).order_by('published_date')
 
     def resolve_content(self, args, context, info):
         return content_models.Content.objects.get(vertical=self.identifier, pk=args.get('content_id'), published_revision__isnull=False)
