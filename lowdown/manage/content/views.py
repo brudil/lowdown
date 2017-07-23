@@ -53,6 +53,10 @@ class ListCreateContent(generics.ListAPIView):
         vertical = self.kwargs['vertical']
         queryset = queryset.filter(content__vertical=vertical)
 
+        if 'state' in self.request.query_params and self.request.query_params['state'] in ['internal', 'live']:
+            queryset = queryset.filter(content__published_revision__isnull=self.request.query_params['state'] == 'internal')
+
+
         if 'order' in self.request.query_params:
             (*order_value, order_key) = self.request.query_params['order'].split('_')
             order_value = '_'.join(order_value)
