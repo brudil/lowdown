@@ -17,6 +17,16 @@ class HeadingBlock(Block):
                                       limit_to=transformers.SETS['all'])
 
 
+class PullQuoteBlock(Block):
+    class Meta:
+        name = 'pullquote'
+
+    attribution = fields.TextualContentField(default_transformer=transformers.InlinedownTextTransformer,
+                                      limit_to=transformers.SETS['all'])
+    quote = fields.TextualContentField(default_transformer=transformers.InlinedownTextTransformer,
+                                      limit_to=transformers.SETS['all'])
+
+
 class ImageBlock(Block):
     class Meta:
         name = 'image'
@@ -46,5 +56,5 @@ class TextBlock(Block):
 
 
 SETS = {
-    'all': (HeadingBlock, ImageBlock, VideoBlock, TextBlock, ),
+    'all': (HeadingBlock, ImageBlock, VideoBlock, TextBlock, PullQuoteBlock, ),
 }
