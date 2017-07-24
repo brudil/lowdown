@@ -58,6 +58,10 @@ class TheDrab(Vertical):
 
     content_tones = [
         constants.TONE_CONTENT,
+        constants.TONE_INTERACTIVE,
+        constants.TONE_REVIEW,
+        constants.TONE_STORYTELLING,
+        constants.TONE_VIEWPOINT,
     ]
 
 
