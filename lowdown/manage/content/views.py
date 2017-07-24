@@ -34,8 +34,8 @@ class ContentListFilter(filters.FilterSet):
 class ListCreateContent(generics.ListAPIView):
     serializer_class = ContentEditorialMetadataSerializer
     filter_class = ContentListFilter
-    filter_backends = (filters.DjangoFilterBackend,)
-    search_fields = ('current_revision__headline',)
+    filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter, )
+    search_fields = ('current_revision__headline', 'current_revision__standfirst')
 
     def get_queryset(self):
         queryset = ContentEditorialMetadata.objects.select_related(
