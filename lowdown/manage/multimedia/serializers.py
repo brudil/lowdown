@@ -36,6 +36,22 @@ class MultimediaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Multimedia
+        read_only_fields = (
+            'id',
+            'created',
+            'updated',
+            'hash',
+            'resource_name',
+            'direct_url',
+            'file_name',
+            'file_type',
+            'mime',
+            'source_method',
+            'metadata',
+            'uploader',
+            'deleted',
+            'type_data'
+        )
         fields = (
             'id',
             'created',

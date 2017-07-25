@@ -72,8 +72,8 @@ class Multimedia(models.Model):
     file_type = models.TextField(null=False)
     file_size = models.IntegerField(null=False)
     mime = models.TextField(null=False)
-    credit_title = models.TextField(null=False)
-    credit_url = models.URLField(null=False)
+    credit_title = models.TextField(null=False, blank=True, default='')
+    credit_url = models.URLField(null=False, blank=True, default='')
     source_method = models.CharField(max_length=4, choices=SOURCE_METHOD_CHOICES, default='UPLD')
     metadata = JSONField(default={})
 
