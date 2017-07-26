@@ -46,7 +46,7 @@ class Content(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     published_revision = models.ForeignKey('content.ContentRevision', null=True, blank=True, related_name='published')
-    published_slug = models.SlugField(null=True, blank=True, unique=False)
+    published_slug = models.SlugField(max_length=60, null=True, blank=True, unique=False)
 
     published_date = models.DateTimeField(null=True)
     published_updated_date = models.DateTimeField(null=True)
