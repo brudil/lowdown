@@ -6,6 +6,9 @@ from types import SimpleNamespace
 from lowdown.core.content import models as content_models
 from lowdown.core.content import constants
 from lowdown.core.multimedia import models as multimedia_models
+from lowdown.core.series import models as series_models
+from lowdown.core.topics import models as topic_models
+from lowdown.core.sections import models as section_models
 from lowdown.core.authors import models as author_models
 from lowdown.core.verticals import structure as verticals
 
@@ -36,6 +39,38 @@ class Author(DjangoObjectType):
     class Meta:
         model = author_models.Author
 
+
+class Topic(DjangoObjectType):
+    class Meta:
+        model = topic_models.Topic
+        only_fields = (
+            'id',
+            'title',
+            'slug',
+            'section',
+        )
+
+
+class Section(DjangoObjectType):
+    class Meta:
+        model = section_models.Section
+        only_fields = (
+            'id',
+            'title',
+            'slug',
+            'vertical',
+        )
+
+
+class Series(DjangoObjectType):
+    class Meta:
+        model = series_models.Series
+        only_fields = (
+            'id',
+            'title',
+            'slug',
+        )
+
 class Multimedia(DjangoObjectType):
     class Meta:
         model = multimedia_models.Multimedia
@@ -64,6 +99,7 @@ class MultimediaImage(DjangoObjectType):
 #         height=getattr(model, '{}_height'.format(name)),
 #     )
 
+
 class ResourceMap(ObjectType):
     lowdownimages = graphene.List(MultimediaImage)
 
@@ -82,6 +118,9 @@ class ContentContent(DjangoObjectType):
     resources = graphene.Field(ResourceMap)
     poster_image = graphene.Field(MultimediaImage)
     authors = graphene.List(Author, )
+    section = graphene.Field(Section)
+    series = graphene.Field(Series)
+    topics = graphene.List(Topic, )
     form = graphene.Field(Form)
 
     def resolve_document(self, args, context, info):
@@ -93,10 +132,28 @@ class ContentContent(DjangoObjectType):
     def resolve_resources(self, args, context, info):
         return SimpleNamespace(**self.get_resources_map())
 
+    def resolve_section(self, args, context, info):
+        return self.section
+
+    def resolve_series(self, args, context, info):
+        return self.series
+
+    def resolve_topics(self, args, context, info):
+        return self.topics.all()
+
+
 class Content(DjangoObjectType):
     class Meta:
         model = content_models.Content
         interfaces = (Node, )
+        only_fields = (
+            'id',
+            'content',
+            'content_id',
+            'published_date',
+            'published_updated_date',
+            'vertical'
+        )
 
     content = graphene.Field(ContentContent)
     content_id = graphene.Int()
