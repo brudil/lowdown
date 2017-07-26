@@ -14,7 +14,7 @@ class ListCreateMultimedia(generics.ListAPIView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        queryset = queryset.filter(vertical=self.kwargs['vertical'])
+        queryset = queryset.filter(vertical=self.kwargs['vertical'], deleted=False)
 
         ids = self.request.query_params.getlist('ids[]')
         if len(ids) > 0:
@@ -48,3 +48,7 @@ class ListCreateMultimedia(generics.ListAPIView):
 class RetrieveUpdateDestroyMultimedia(generics.RetrieveUpdateDestroyAPIView):
     queryset = Multimedia.objects.all()
     serializer_class = MultimediaSerializer
+
+    def perform_destroy(self, instance):
+        instance.deleted = True
+        instance.save()

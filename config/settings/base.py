@@ -210,3 +210,5 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer'
 }
+
+CORS_EXPOSE_HEADERS = ['content-type', 'content-length']
