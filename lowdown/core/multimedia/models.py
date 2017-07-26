@@ -75,10 +75,10 @@ class Multimedia(models.Model):
     credit_title = models.TextField(null=False, blank=True, default='')
     credit_url = models.URLField(null=False, blank=True, default='')
     source_method = models.CharField(max_length=4, choices=SOURCE_METHOD_CHOICES, default='UPLD')
-    metadata = JSONField(default={})
+    metadata = JSONField(default={}, blank=True)
 
     uploader = models.ForeignKey('users.LowdownUser', related_name='multimedia')
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
 
     deleted = models.BooleanField(default=False)
 
