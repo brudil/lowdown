@@ -14,7 +14,8 @@ class ListCreateMultimedia(generics.ListAPIView):
     def get_queryset(self):
         queryset = super().get_queryset()
 
-        queryset = queryset.filter(vertical=self.kwargs['vertical'], deleted=False)
+        if 'vertical' in self.kwargs:
+            queryset = queryset.filter(vertical=self.kwargs['vertical'], deleted=False)
 
         ids = self.request.query_params.getlist('ids[]')
         if len(ids) > 0:
