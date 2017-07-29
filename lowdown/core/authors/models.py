@@ -8,6 +8,8 @@ class Author(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     name = models.TextField(null=False)
+    slug = models.SlugField(null=True, unique=False)
+    bio = models.TextField(default='')
     vertical = VerticalField()
     deleted = models.BooleanField(default=False)
 
