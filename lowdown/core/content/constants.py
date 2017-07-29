@@ -16,6 +16,7 @@ TONE_VIEWPOINT = 3
 TONE_STORYTELLING = 4
 TONE_INTERACTIVE = 5
 TONE_GUIDE = 6
+TONE_NEWS = 7
 
 TONE_CHOICES = (
     (TONE_CONTENT, 'Content'),
@@ -24,6 +25,7 @@ TONE_CHOICES = (
     (TONE_STORYTELLING, 'Storytelling'),
     (TONE_INTERACTIVE, 'Interactive'),
     (TONE_GUIDE, 'Guide'),
+    (TONE_NEWS, 'News'),
 )
 
 STATUS_STUB = 1
