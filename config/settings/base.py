@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
     # 3rd party
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'taggit',
     'graphene_django',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'lowdown.core.multimedia',
     'lowdown.core.content',
     'lowdown.core.authors',
+    'lowdown.core.interactives',
 
     # manage
     'lowdown.manage.verticals',
@@ -53,6 +55,7 @@ INSTALLED_APPS = [
     'lowdown.manage.multimedia',
     'lowdown.manage.content',
     'lowdown.manage.notifications',
+    'lowdown.manage.interactives',
 
     # publisher
     'lowdown.publisher.content',

@@ -109,6 +109,14 @@ class IntegerValueField(ValueField):
         return isinstance(value, int)
 
 
+class StringValueField(ValueField):
+    def create_default_value(self) -> Any:
+        return None
+
+    def is_valid(self, value) -> bool:
+        return isinstance(value, str)
+
+
 class ChoiceValueField(ValueField):
 
     def __init__(self, default_value: Any=None, choices: Optional[Tuple[Any, ...]]=None, blank: bool=False):

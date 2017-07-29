@@ -31,6 +31,7 @@ from lowdown.manage.multimedia.views import ListCreateMultimedia
 from lowdown.manage.multimedia import urls as manage_multimedia_urls
 from lowdown.manage.authors import urls as manage_authors_urls
 from lowdown.manage.verticals import urls as manage_verticals_urls
+from lowdown.manage.interactives import urls as manage_interactives_urls
 
 # publisher
 from lowdown.publisher.content import urls as publisher_content_urls
@@ -49,6 +50,7 @@ manage_patterns = [
     url(r'^notifications/', include(manage_notifications_urls)),
     url(r'^sections/', include(manage_sections_urls)),
     url(r'^media/', include(manage_multimedia_urls)),
+    url(r'^interactives/', include(manage_interactives_urls)),
     url(r'^content/', include(manage_content_urls)),
     url(r'^verticals/', include(manage_verticals_urls)),
     url(r'^verticals/(?P<vertical>\w+)/', include(inner_verticals)),

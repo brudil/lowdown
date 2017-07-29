@@ -39,6 +39,14 @@ class ImageBlock(Block):
     sourceURL = fields.URLValueField(blank=True)
 
 
+class CanvasBlock(Block):
+    class Meta:
+        name = 'canvas'
+
+    resource = fields.ElementField(limit_to=(resources.LowdownInteractiveResource, ), default_element=resources.LowdownInteractiveResource)
+    container = fields.ChoiceValueField(default_value='CONTAINER', choices=('CONTENT', 'CONTAINER', 'BLEED', ), blank=False)
+
+
 class VideoBlock(Block):
     class Meta:
         name = 'video'
@@ -56,5 +64,5 @@ class TextBlock(Block):
 
 
 SETS = {
-    'all': (HeadingBlock, ImageBlock, VideoBlock, TextBlock, PullQuoteBlock, ),
+    'all': (HeadingBlock, ImageBlock, VideoBlock, TextBlock, PullQuoteBlock, CanvasBlock),
 }

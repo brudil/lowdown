@@ -2,6 +2,7 @@ from spectrum.base import BaseElement
 from spectrum import fields
 from spectrum import sections
 from spectrum import blocks
+from spectrum import resources
 
 
 class Subtype(BaseElement):
@@ -24,6 +25,14 @@ class VideoSubtype(Subtype):
     stream = fields.FieldStreamField(fields.ElementField(limit_to=sections.SETS['all']))
 
 
+class CanvasSubtype(Subtype):
+    class Meta:
+        name = 'canvas'
+
+    resource = fields.ElementField(limit_to=(resources.LowdownInteractiveResource, ), default_element=resources.LowdownInteractiveResource)
+    viewMode = fields.ChoiceValueField(default_value='CONTAINER', choices=('CONTENT', 'CONTAINER', 'CANVAS', ), blank=False)
+
+
 SETS = {
-    'all': (ArticleSubtype, VideoSubtype, )
+    'all': (ArticleSubtype, VideoSubtype, CanvasSubtype)
 }

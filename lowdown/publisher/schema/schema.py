@@ -11,6 +11,7 @@ from lowdown.core.topics import models as topic_models
 from lowdown.core.sections import models as section_models
 from lowdown.core.authors import models as author_models
 from lowdown.core.verticals import structure as verticals
+from lowdown.core.interactives import models as interactives_models
 
 
 def connection_for_type(_type):
@@ -32,6 +33,16 @@ Form = graphene.Enum('Form', [
     ('VIDEO', constants.FORM_VIDEO),
     ('INTERACTIVE', constants.FORM_INTERACTIVE),
     ('GALLERY', constants.FORM_GALLERY),
+])
+
+Tone = graphene.Enum('Tone', [
+    ('CONTENT', constants.TONE_CONTENT),
+    ('REVIEW', constants.TONE_REVIEW),
+    ('VIEWPOINT', constants.TONE_VIEWPOINT),
+    ('STORYTELLING', constants.TONE_STORYTELLING),
+    ('INTERACTIVE', constants.TONE_INTERACTIVE),
+    ('GUIDE', constants.TONE_GUIDE),
+    ('NEWS', constants.TONE_NEWS),
 ])
 
 
@@ -76,6 +87,7 @@ class Multimedia(DjangoObjectType):
         model = multimedia_models.Multimedia
         only_fields = ('id', 'resource_name', )
 
+
 class MultimediaImage(DjangoObjectType):
     class Meta:
         model = multimedia_models.Multimedia
@@ -100,12 +112,35 @@ class MultimediaImage(DjangoObjectType):
 #     )
 
 
+class Interactive(DjangoObjectType):
+    class Meta:
+        model = interactives_models.Interactive
+        only_fields = ('slug', )
+
+    release_number = graphene.Int()
+
+    def resolve_release_number(self, args, context, info):
+        latest = self.get_latest_public_release()
+        if latest is None:
+            return None
+
+        return latest.revision_number
+
+
+
 class ResourceMap(ObjectType):
     lowdownimages = graphene.List(MultimediaImage)
+    lowdowninteractives = graphene.List(Interactive)
 
     def resolve_lowdownimages(self, args, context, info):
         try:
             return self.lowdownimage
+        except AttributeError:
+            return None
+
+    def resolve_lowdowninteractives(self, args, context, info):
+        try:
+            return self.lowdowninteractive
         except AttributeError:
             return None
 
@@ -122,6 +157,7 @@ class ContentContent(DjangoObjectType):
     series = graphene.Field(Series)
     topics = graphene.List(Topic, )
     form = graphene.Field(Form)
+    tone = graphene.Field(Tone)
 
     def resolve_document(self, args, context, info):
         return self.spectrum_document

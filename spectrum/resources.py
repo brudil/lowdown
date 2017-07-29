@@ -14,6 +14,14 @@ class LowdownImageResource(Resource):
         name = 'lowdownimage'
 
 
+class LowdownInteractiveResource(BaseElement):
+    class Meta:
+        type = 'resource'
+        name = 'lowdowninteractive'
+
+    slug = fields.StringValueField()
+
+
 class OEmbedResource(Resource):
     class Meta:
         name = 'oembed'

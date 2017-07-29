@@ -3,16 +3,23 @@ from datetime import datetime
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db import transaction
+
+from lowdown.core.interactives.models import Interactive
 from lowdown.core.content import constants
 from lowdown.core.verticals.fields import VerticalField
 from lowdown.core.multimedia.models import Multimedia
 from spectrum import resources
 from spectrum.document import SpectrumDocument
 
+# TODO: the resource resolve logic is rather poor and should be consolidated,
+#       initially support was only build in to reference via primary key integers
+#       but interactives use slugs, so there are a few messy if statements that should really be
+#       moved to a config var or built in to spectrum
 
 def resource_mapper(resource_name):
     map = {
-        'lowdownimage': Multimedia.objects.prefetch_related('media_object')
+        'lowdownimage': Multimedia.objects.prefetch_related('media_object'),
+        'lowdowninteractive': Interactive.objects,
     }
     return map[resource_name]
 
@@ -23,7 +30,10 @@ def map_resources_by_name(resources_list):
     for resource in resources_list:
         resource_name = resource.Meta.name
         map_by_name.setdefault(resource_name, [])
-        map_by_name[resource_name].append(resource.id)
+        if resource_name == 'lowdowninteractive':
+            map_by_name[resource_name].append(resource.slug)
+        else:
+            map_by_name[resource_name].append(resource.id)
 
     return map_by_name
 
@@ -33,7 +43,10 @@ def resource_resolver(resources_by_name):
 
     for resource_name, ids in resources_by_name.items():
         queryset = resource_mapper(resource_name)
-        resources_map[resource_name] = queryset.filter(id__in=ids)
+        if resource_name == 'lowdowninteractive':
+            resources_map[resource_name] = queryset.filter(slug__in=ids)
+        else:
+            resources_map[resource_name] = queryset.filter(id__in=ids)
 
     return resources_map
 
@@ -125,7 +138,7 @@ class ContentRevision(models.Model):
         document = self.get_spectrum_document()
         elements = document.get_elements()
 
-        found_resources = [element for element in elements if isinstance(element, resources.Resource)]
+        found_resources = [element for element in elements if (isinstance(element, resources.Resource) or isinstance(element, resources.LowdownInteractiveResource))]
 
         return map_resources_by_name(found_resources)
 
