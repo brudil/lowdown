@@ -50,10 +50,17 @@ class Author(DjangoObjectType):
     class Meta:
         model = author_models.Author
 
+    all_content = DjangoConnectionField(lambda: Content)
+
+    def resolve_all_content(self, args, context, info):
+        queryset = content_models.Content.objects.filter(vertical=self.vertical, published_revision__isnull=False, published_revision__authors__in=[self])
+        return queryset.order_by('-published_date')
+
 
 class Topic(DjangoObjectType):
     class Meta:
         model = topic_models.Topic
+        interfaces = (Node, )
         only_fields = (
             'id',
             'title',
@@ -72,6 +79,15 @@ class Section(DjangoObjectType):
             'vertical',
         )
 
+    all_content = DjangoConnectionField(lambda: Content)
+    all_topics = DjangoConnectionField(Topic)
+
+    def resolve_all_content(self, args, context, info):
+        queryset = content_models.Content.objects.filter(vertical=self.vertical, published_revision__isnull=False, published_revision__section=self)
+        return queryset.order_by('-published_date')
+
+    def resolve_all_topics(self, args, context, info):
+        return self.topics.all()
 
 class Series(DjangoObjectType):
     class Meta:
@@ -91,7 +107,7 @@ class Multimedia(DjangoObjectType):
 class MultimediaImage(DjangoObjectType):
     class Meta:
         model = multimedia_models.Multimedia
-        only_fields = ('id', 'resource_name', )
+        only_fields = ('id', 'resource_name', 'credit_title', 'credit_url')
 
     width = graphene.Int()
     height = graphene.Int()
@@ -204,14 +220,31 @@ Content.Connection = connection_for_type(Content)
 
 
 class Vertical(ObjectType):
-    all_content = DjangoConnectionField(Content, )
+    all_content = DjangoConnectionField(Content, form=graphene.Argument(Form, required=False), tone=graphene.Argument(Tone, required=False))
     content = graphene.Field(Content, content_id=graphene.Int())
+    author = graphene.Field(Author, slug=graphene.String())
+    section = graphene.Field(Section, slug=graphene.String())
 
     def resolve_all_content(self, args, context, info):
-        return content_models.Content.objects.filter(vertical=self.identifier, published_revision__isnull=False).order_by('-published_date')
+        queryset = content_models.Content.objects.filter(vertical=self.identifier, published_revision__isnull=False)
+
+        if args.get('form') is not None:
+            queryset = queryset.filter(published_revision__form=args.get('form'))
+
+        if args.get('tone') is not None:
+            queryset = queryset.filter(published_revision__tone=args.get('tone'))
+
+
+        return queryset.order_by('-published_date')
 
     def resolve_content(self, args, context, info):
         return content_models.Content.objects.get(vertical=self.identifier, pk=args.get('content_id'), published_revision__isnull=False)
+
+    def resolve_author(self, args, context, info):
+        return author_models.Author.objects.get(vertical=self.identifier, slug=args.get('slug'))
+
+    def resolve_section(self, args, context, info):
+        return section_models.Section.objects.get(vertical=self.identifier, slug=args.get('slug'))
 
 
 class Query(graphene.ObjectType):
