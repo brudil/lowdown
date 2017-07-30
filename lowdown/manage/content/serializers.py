@@ -51,6 +51,7 @@ class ContentRevisionSerializer(serializers.ModelSerializer):
             'tone',
             'form',
             'status',
+            'preview_key',
 
             'spectrum_document'
         )

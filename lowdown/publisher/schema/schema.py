@@ -251,6 +251,7 @@ class Query(graphene.ObjectType):
     # all_sections = graphene.List(ShowSlot, )
     # content = graphene.Field(Show, slug=graphene.String())
     vertical = graphene.Field(Vertical, identifier=graphene.String())
+    preview_content = graphene.Field(ContentContent, revision_id=graphene.Int(), preview_key=graphene.String())
 
     def resolve_vertical(self, args, context, info):
         identifier = args.get('identifier')
@@ -261,7 +262,11 @@ class Query(graphene.ObjectType):
 
         return vertical
 
-    # def resolve_current_slate(self, args, context, info):
+    def resolve_preview_content(self, args, context, info):
+        return content_models.ContentRevision.objects.get(pk=args.get('revision_id'), preview_key=args.get('preview_key'))
+
+
+        # def resolve_current_slate(self, args, context, info):
     #     return show_models.ShowsConfiguration.objects.get().current_slate
     #
     # def resolve_all_shows(self, args, context, info):

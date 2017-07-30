@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from django.contrib.postgres.fields import JSONField
@@ -118,6 +119,8 @@ class ContentRevision(models.Model):
     slug = models.CharField(max_length=60, null=True, blank=True)
     tone = models.SmallIntegerField(choices=constants.TONE_CHOICES, null=False, db_index=True)
     form = models.SmallIntegerField(choices=constants.FORM_CHOICES, null=False, db_index=True)
+
+    preview_key = models.UUIDField(default=uuid.uuid4, editable=False)
 
     spectrum_document = JSONField(blank=True)
 
