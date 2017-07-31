@@ -49,6 +49,7 @@ manage_patterns = [
     url(r'^users/', include(manage_users_urls)),
     url(r'^notifications/', include(manage_notifications_urls)),
     url(r'^sections/', include(manage_sections_urls)),
+    url(r'^topics/', include(manage_topics_urls)),
     url(r'^media/', include(manage_multimedia_urls)),
     url(r'^interactives/', include(manage_interactives_urls)),
     url(r'^content/', include(manage_content_urls)),

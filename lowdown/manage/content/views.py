@@ -35,7 +35,7 @@ class ListCreateContent(generics.ListAPIView):
     serializer_class = ContentEditorialMetadataSerializer
     filter_class = ContentListFilter
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter, )
-    search_fields = ('current_revision__headline', 'current_revision__standfirst')
+    search_fields = ('current_revision__headline', )
 
     def get_queryset(self):
         queryset = ContentEditorialMetadata.objects.select_related(
@@ -55,7 +55,6 @@ class ListCreateContent(generics.ListAPIView):
 
         if 'state' in self.request.query_params and self.request.query_params['state'] in ['internal', 'live']:
             queryset = queryset.filter(content__published_revision__isnull=self.request.query_params['state'] == 'internal')
-
 
         if 'order' in self.request.query_params:
             (*order_value, order_key) = self.request.query_params['order'].split('_')
