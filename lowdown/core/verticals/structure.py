@@ -54,6 +54,7 @@ class TheDrab(Vertical):
 
     content_forms = [
         constants.FORM_ARTICLE,
+        constants.FORM_INTERACTIVE,
     ]
 
     content_tones = [
