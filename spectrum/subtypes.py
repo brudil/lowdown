@@ -27,7 +27,7 @@ class VideoSubtype(Subtype):
 
 class CanvasSubtype(Subtype):
     class Meta:
-        name = 'canvas'
+        name = 'canvas_subtype'
 
     resource = fields.ElementField(limit_to=(resources.LowdownInteractiveResource, ), default_element=resources.LowdownInteractiveResource)
     viewMode = fields.ChoiceValueField(default_value='CONTAINER', choices=('CONTENT', 'CONTAINER', 'CANVAS', ), blank=False)

@@ -16,7 +16,7 @@ class ListCreateTopic(generics.ListCreateAPIView):
     search_fields = ('title', 'slug')
 
     def get_queryset(self):
-        queryset = Topic.objects.all()
+        queryset = Topic.objects.filter(deleted=False)
 
         if 'vertical' in self.kwargs:
             queryset = queryset.filter(section__vertical=self.kwargs['vertical'])
