@@ -26,6 +26,7 @@ CORS_ORIGIN_WHITELIST = (
     'www.thedrab.co',
     'localhost:3474',
     'localhost:3000',
+    'localhost:2334',
     'localhost:8080',
     'localhost',
     'theprate-staging.herokuapp.com',
