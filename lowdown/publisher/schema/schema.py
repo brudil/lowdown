@@ -252,6 +252,7 @@ class Query(graphene.ObjectType):
     # content = graphene.Field(Show, slug=graphene.String())
     vertical = graphene.Field(Vertical, identifier=graphene.String())
     preview_content = graphene.Field(ContentContent, revision_id=graphene.Int(), preview_key=graphene.String())
+    image = graphene.Field(MultimediaImage, media_id=graphene.Int())
 
     def resolve_vertical(self, args, context, info):
         identifier = args.get('identifier')
@@ -265,6 +266,8 @@ class Query(graphene.ObjectType):
     def resolve_preview_content(self, args, context, info):
         return content_models.ContentRevision.objects.get(pk=args.get('revision_id'), preview_key=args.get('preview_key'))
 
+    def resolve_image(self, args, context, info):
+        return multimedia_models.Multimedia.objects.get(pk=args.get('media_id'))
 
         # def resolve_current_slate(self, args, context, info):
     #     return show_models.ShowsConfiguration.objects.get().current_slate
