@@ -72,7 +72,7 @@ class Content(models.Model):
         return 'Content #{}'.format(self.pk)
 
     @classmethod
-    def from_revision(cls, revision_serializer, vertical):
+    def from_revision(cls, revision_serializer, vertical, user):
         with transaction.atomic():
             content = cls()
             content.vertical = vertical
@@ -80,6 +80,8 @@ class Content(models.Model):
 
             revision_serializer.save(content=content, revision_number=1)
             revision = revision_serializer.instance
+            revision.created_by = user
+            revision.save()
 
             metadata = ContentEditorialMetadata()
             metadata.content = content
@@ -98,6 +100,7 @@ class ContentRevision(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     revision_number = models.PositiveIntegerField(null=False, default=0)
+    created_by = models.ForeignKey('users.LowdownUser', null=True, related_name='revisions')
 
     content = models.ForeignKey('content.Content', db_index=True, null=False, related_name='revisions')
     series = models.ForeignKey('series.Series', null=True, blank=True,  default=None, related_name='content_revisions')
@@ -203,6 +206,39 @@ class ContentEditorialMetadata(models.Model):
     def __str__(self):
         return 'Content Editorial Metadata #{}'.format(self.content.pk)
 
+
+    def lock_writes(self, user):
+        # TODO: lock via redis
+        # redis.setnx(self.content.pk, user) for 30 seconds
+        return True # return if successful
+
+    def is_locked(self):
+        pass
+    # TODO: see if locked
+    # redis.get(self.content.pk)
+    #return (True, get_user)
+
+
     @property
     def published(self):
         return self.content.published_date is not None
+
+#
+# # TODO: content watchers
+# class ContentWatcher(models.Model):
+#     content_editorial_metadata = models.ForeignKey(ContentEditorialMetadata, related_name='watchers')
+#     watcher = models.ForeignKey('users.LowdownUser', related_name='watching_content')
+#     silent = models.BooleanField(default=False)
+#
+#     class Meta:
+#         unique_together = ('content_editorial_metadata', 'watcher')
+#
+#
+# # TODO: content comments
+# class ContentComment(models.Model):
+#     revision = models.ForeignKey(ContentRevision)
+#     user = models.ForeignKey('users.LowdownUser', related_name='content_comments')
+#     comment = models.TextField()
+#     created = models.DateTimeField(auto_now_add=True)
+#     updated = models.DateTimeField(auto_now=True)
+#     deleted = models.BooleanField(default=False)

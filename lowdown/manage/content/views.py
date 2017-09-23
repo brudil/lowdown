@@ -73,7 +73,7 @@ class ListCreateContent(generics.ListAPIView):
     def post(self, request, *args, **kwargs):
         serializer = ContentRevisionLocalSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        metadata = Content.from_revision(serializer, kwargs['vertical'])
+        metadata = Content.from_revision(serializer, kwargs['vertical'], self.request.user)
 
         return Response(ContentRevisionSerializer(instance=metadata.current_revision).data)
 
@@ -128,5 +128,6 @@ class CreateRevision(generics.CreateAPIView):
             editorial.revision_count += 1
 
             editorial.save()
+            new_revision.created_by = self.request.user
             new_revision.revision_number = editorial.revision_count
             new_revision.save()
