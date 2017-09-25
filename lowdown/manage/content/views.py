@@ -128,6 +128,7 @@ class CreateRevision(generics.CreateAPIView):
             editorial.revision_count += 1
 
             editorial.save()
+            editorial.add_watcher(self.request.user)
             new_revision.created_by = self.request.user
             new_revision.revision_number = editorial.revision_count
             new_revision.save()

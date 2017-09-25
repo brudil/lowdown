@@ -1,8 +1,9 @@
 import uuid
+from collections import namedtuple
 from datetime import datetime
 
 from django.contrib.postgres.fields import JSONField
-from django.db import models
+from django.db import models, IntegrityError
 from django.db import transaction
 
 from lowdown.core.interactives.models import Interactive
@@ -24,6 +25,8 @@ def resource_mapper(resource_name):
     }
     return map[resource_name]
 
+
+ContentStats = namedtuple('ContentStats', ['total_drafts', 'total_final', 'total_stubs'])
 
 def map_resources_by_name(resources_list):
     map_by_name = {}
@@ -72,6 +75,29 @@ class Content(models.Model):
         return 'Content #{}'.format(self.pk)
 
     @classmethod
+    def get_stats_for_vertical(cls, vertical):
+        total_draft = Content.objects.filter(
+            vertical=vertical,
+            editorial_metadata__current_revision__status=constants.STATUS_DRAFT
+        ).count()
+
+        total_ready = Content.objects.filter(
+            vertical=vertical,
+            editorial_metadata__current_revision__status=constants.STATUS_FINAL
+        ).count()
+
+        total_stubs = Content.objects.filter(
+            vertical=vertical,
+            editorial_metadata__current_revision__status=constants.STATUS_STUB
+        ).count()
+
+        return ContentStats(
+            total_stubs=total_stubs,
+            total_drafts=total_draft,
+            total_final=total_ready
+        )
+
+    @classmethod
     def from_revision(cls, revision_serializer, vertical, user):
         with transaction.atomic():
             content = cls()
@@ -89,6 +115,8 @@ class Content(models.Model):
             metadata.revision_count += 1
 
             metadata.save()
+
+            metadata.add_watcher(user)
 
         return metadata
 
@@ -185,8 +213,21 @@ class ContentRevision(models.Model):
 
         return content
 
+    def add_comment(self, user, comment):
+        comment = ContentComment.objects.create(user=user, comment=comment, revision=self)
+        return comment
+
     def __str__(self):
         return self.headline
+
+
+class ContentComment(models.Model):
+    revision = models.ForeignKey(ContentRevision)
+    user = models.ForeignKey('users.LowdownUser', related_name='content_comments')
+    comment = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    deleted = models.BooleanField(default=False)
 
 
 class ContentEditorialMetadata(models.Model):
@@ -203,9 +244,14 @@ class ContentEditorialMetadata(models.Model):
 
     revision_count = models.IntegerField(default=0, null=False)
 
+    watchers = models.ManyToManyField(to='users.LowdownUser', through='content.ContentWatcher')
+
     def __str__(self):
         return 'Content Editorial Metadata #{}'.format(self.content.pk)
 
+    def comments(self):
+        return ContentComment.objects.filter(revision__content=self.content, deleted=False)\
+            .order_by('created')
 
     def lock_writes(self, user):
         # TODO: lock via redis
@@ -218,27 +264,22 @@ class ContentEditorialMetadata(models.Model):
     # redis.get(self.content.pk)
     #return (True, get_user)
 
+    def add_watcher(self, user):
+        try:
+            ContentWatcher.objects.get(content_editorial_metadata=self, watcher=user)
+        except ContentWatcher.DoesNotExist:
+            ContentWatcher.objects.create(watcher=user, content_editorial_metadata=self)
+
 
     @property
     def published(self):
         return self.content.published_date is not None
 
-#
-# # TODO: content watchers
-# class ContentWatcher(models.Model):
-#     content_editorial_metadata = models.ForeignKey(ContentEditorialMetadata, related_name='watchers')
-#     watcher = models.ForeignKey('users.LowdownUser', related_name='watching_content')
-#     silent = models.BooleanField(default=False)
-#
-#     class Meta:
-#         unique_together = ('content_editorial_metadata', 'watcher')
-#
-#
-# # TODO: content comments
-# class ContentComment(models.Model):
-#     revision = models.ForeignKey(ContentRevision)
-#     user = models.ForeignKey('users.LowdownUser', related_name='content_comments')
-#     comment = models.TextField()
-#     created = models.DateTimeField(auto_now_add=True)
-#     updated = models.DateTimeField(auto_now=True)
-#     deleted = models.BooleanField(default=False)
+
+class ContentWatcher(models.Model):
+    content_editorial_metadata = models.ForeignKey(ContentEditorialMetadata)
+    watcher = models.ForeignKey('users.LowdownUser', related_name='watching_content')
+    silent = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('content_editorial_metadata', 'watcher')

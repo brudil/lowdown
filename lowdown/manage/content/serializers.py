@@ -89,6 +89,7 @@ class ContentRevisionLocalSerializer(serializers.ModelSerializer):
 
 class ContentRevisionListSerializer(serializers.ModelSerializer):
     authors = AuthorSerializer(read_only=True, many=True)
+    created_by = UserSerializer(read_only=True)
 
     class Meta:
         model = ContentRevision
@@ -99,6 +100,7 @@ class ContentRevisionListSerializer(serializers.ModelSerializer):
             'series',
             'topics',
             'authors',
+            'created_by',
 
             'revision_number',
 

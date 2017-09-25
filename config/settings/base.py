@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'lowdown.manage.content',
     'lowdown.manage.notifications',
     'lowdown.manage.interactives',
+    'lowdown.manage.releasenotes',
 
     # publisher
     'lowdown.publisher.content',

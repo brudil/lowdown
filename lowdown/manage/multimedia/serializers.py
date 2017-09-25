@@ -50,8 +50,9 @@ class MultimediaSerializer(serializers.ModelSerializer):
             'metadata',
             'uploader',
             'deleted',
-            'type_data'
+            'type_data',
         )
+
         fields = (
             'id',
             'created',
@@ -69,5 +70,5 @@ class MultimediaSerializer(serializers.ModelSerializer):
             'uploader',
             'tags',
             'deleted',
-            'type_data'
+            'type_data',
         )
