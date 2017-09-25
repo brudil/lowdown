@@ -293,7 +293,7 @@ class Vertical(ObjectType):
         return section_models.Section.objects.get(vertical=self.identifier, slug=args.get('slug'))
 
     def resolve_all_media(self, args, context, info):
-        return multimedia_models.Multimedia.objects.all().order_by('-created')
+        return multimedia_models.Multimedia.objects.filter(vertical=self.identifier, deleted=False).order_by('-created')
 
 
 class Notification(DjangoObjectType):
