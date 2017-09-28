@@ -480,9 +480,38 @@ class WatchContent(graphene.Mutation):
             return WatchContent(ok=False)
 
 
+class EditMedia(graphene.Mutation):
+    class Input:
+        media_id = graphene.Int()
+        credit_title = graphene.String()
+        credit_url = graphene.String()
+
+    ok = graphene.Boolean()
+    media = graphene.Field(Multimedia)
+
+    def mutate(self, args, context, info):
+        media_id = args.get('media_id')
+        credit_title = args.get('credit_title')
+        credit_url = args.get('credit_url')
+
+        try:
+            media = multimedia_models.Multimedia.objects\
+                .get(pk=media_id)
+
+            media.credit_title = credit_title
+            media.credit_url = credit_url
+
+            media.save()
+
+            return EditMedia(ok=True, media=media)
+        except content_models.Content.DoesNotExist:
+            return EditMedia(ok=False)
+
+
 class Mutations(graphene.ObjectType):
     lock_content = LockContent.Field()
     post_content_comment = PostContentComment.Field()
     watch_content = WatchContent.Field()
+    edit_media = EditMedia.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutations)
