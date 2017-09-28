@@ -379,36 +379,8 @@ class Query(graphene.ObjectType):
     def resolve_release_notes(self, args, context, info):
         return releasenotes_models.ReleaseNote.objects.filter(deleted=False).order_by('-created')
 
-        # def resolve_current_slate(self, args, context, info):
-    #     return show_models.ShowsConfiguration.objects.get().current_slate
-    #
-    # def resolve_all_shows(self, args, context, info):
-    #     return show_models.Show.objects.all()
-    #
-    # def resolve_all_members(self, args, context, info):
-    #     return user_models.User.objects.all()
-    #
-    # def resolve_all_slates(self, args, context, info):
-    #     return show_models.ScheduleSlate.objects.all()
-    #
-    # def resolve_all_episodes(self, args, context, info):
-    #     return show_models.ShowEpisode.objects.all()
-    #
-    # def resolve_all_slots(self, args, context, info):
-    #     return show_models.ShowSlot.objects.filter(slate=show_models.ShowsConfiguration.objects.get().current_slate)
-    #
-    # def resolve_viewer(self, args, context, info):
-    #     return context.user if context.user.is_authenticated else None
-    #
-
-# todo: Query: Content -> Comments
-# todo: Query: Content -> Watchers
-
-# todo: Mutation: PostContentComment
-
 # todo: Mutation: MarkNotificationsAsRead
 
-# todo: Mutation: WatchContent
 # todo: Mutation: UnwatchContent
 
 # todo: Mutation: UnpublishContent
@@ -419,7 +391,6 @@ class Query(graphene.ObjectType):
 
 # todo: Mutation: UploadMedia
 # todo: Mutation: DeleteMedia
-# todo: Mutation: EditMedia
 
 
 class LockContent(graphene.Mutation):
@@ -509,10 +480,58 @@ class EditMedia(graphene.Mutation):
             return EditMedia(ok=False)
 
 
+
+class DeleteMedia(graphene.Mutation):
+    class Input:
+        media_id = graphene.Int()
+
+    ok = graphene.Boolean()
+    media = graphene.Field(Multimedia)
+
+    def mutate(self, args, context, info):
+        media_id = args.get('media_id')
+
+        try:
+            media = multimedia_models.Multimedia.objects\
+                .get(pk=media_id)
+
+            media.deleted = True
+
+            media.save()
+
+            return DeleteMedia(ok=True, media=media)
+        except content_models.Content.DoesNotExist:
+            return DeleteMedia(ok=False)
+
+class UndeleteMedia(graphene.Mutation):
+    class Input:
+        media_id = graphene.Int()
+
+    ok = graphene.Boolean()
+    media = graphene.Field(Multimedia)
+
+    def mutate(self, args, context, info):
+        media_id = args.get('media_id')
+
+        try:
+            media = multimedia_models.Multimedia.objects\
+                .get(pk=media_id)
+
+            media.deleted = False
+
+            media.save()
+
+            return DeleteMedia(ok=True, media=media)
+        except content_models.Content.DoesNotExist:
+            return DeleteMedia(ok=False)
+
+
 class Mutations(graphene.ObjectType):
     lock_content = LockContent.Field()
     post_content_comment = PostContentComment.Field()
     watch_content = WatchContent.Field()
     edit_media = EditMedia.Field()
+    delete_media = DeleteMedia.Field()
+    undelete_media = UndeleteMedia.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutations)
