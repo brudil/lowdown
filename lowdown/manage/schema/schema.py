@@ -274,6 +274,7 @@ class ContentStats(graphene.ObjectType):
     total_stubs = graphene.Int()
     total_drafts = graphene.Int()
     total_final = graphene.Int()
+    total_published = graphene.Int()
 
 
 class Vertical(ObjectType):

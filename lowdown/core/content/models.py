@@ -26,7 +26,7 @@ def resource_mapper(resource_name):
     return map[resource_name]
 
 
-ContentStats = namedtuple('ContentStats', ['total_drafts', 'total_final', 'total_stubs'])
+ContentStats = namedtuple('ContentStats', ['total_drafts', 'total_final', 'total_stubs', 'total_published'])
 
 def map_resources_by_name(resources_list):
     map_by_name = {}
@@ -78,23 +78,32 @@ class Content(models.Model):
     def get_stats_for_vertical(cls, vertical):
         total_draft = Content.objects.filter(
             vertical=vertical,
-            editorial_metadata__current_revision__status=constants.STATUS_DRAFT
+            editorial_metadata__current_revision__status=constants.STATUS_DRAFT,
+            published_revision__isnull=True
         ).count()
 
         total_ready = Content.objects.filter(
             vertical=vertical,
-            editorial_metadata__current_revision__status=constants.STATUS_FINAL
+            editorial_metadata__current_revision__status=constants.STATUS_FINAL,
+            published_revision__isnull=True
         ).count()
 
         total_stubs = Content.objects.filter(
             vertical=vertical,
-            editorial_metadata__current_revision__status=constants.STATUS_STUB
+            editorial_metadata__current_revision__status=constants.STATUS_STUB,
+            published_revision__isnull=True
+        ).count()
+
+        total_published = Content.objects.filter(
+            vertical=vertical,
+            published_revision__isnull=False
         ).count()
 
         return ContentStats(
             total_stubs=total_stubs,
             total_drafts=total_draft,
-            total_final=total_ready
+            total_final=total_ready,
+            total_published=total_published,
         )
 
     @classmethod
