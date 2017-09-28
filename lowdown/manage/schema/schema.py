@@ -53,6 +53,11 @@ class User(DjangoObjectType):
     class Meta:
         model = user_models.LowdownUser
 
+    user_id = graphene.Int()
+
+    def resolve_user_id(self, args, context, info):
+        return self.pk
+
 
 class Author(DjangoObjectType):
     class Meta:
@@ -220,14 +225,28 @@ class ContentComment(DjangoObjectType):
         return self.user
 
 
+class ContentWatcher(DjangoObjectType):
+    class Meta:
+        model = content_models.ContentWatcher
+
+    user = graphene.Field(User)
+
+    def resolve_user(self, args, context, info):
+        return self.watcher
+
+
 class EditorialMetadata(DjangoObjectType):
     class Meta:
         model = content_models.ContentEditorialMetadata
 
     comments = graphene.List(ContentComment)
+    watchers = graphene.List(ContentWatcher)
 
     def resolve_comments(self, args, context, info):
         return self.comments()
+
+    def resolve_watchers(self, args, context, info):
+        return self.watchers()
 
 
 class Content(DjangoObjectType):
@@ -260,6 +279,7 @@ class ContentStats(graphene.ObjectType):
 class Vertical(ObjectType):
     all_content = DjangoConnectionField(Content, watching=graphene.Boolean(), form=graphene.Argument(Form, required=False), tone=graphene.Argument(Tone, required=False))
     content = graphene.Field(Content, content_id=graphene.Int())
+    last_published = graphene.Field(Content, content_id=graphene.Int())
     content_stats = graphene.Field(ContentStats)
     author = graphene.Field(Author, slug=graphene.String())
     section = graphene.Field(Section, slug=graphene.String())
@@ -278,13 +298,18 @@ class Vertical(ObjectType):
         if args.get('tone') is not None:
             queryset = queryset.filter(published_revision__tone=args.get('tone'))
 
-        return queryset.order_by('-published_date')
+        return queryset.order_by('-editorial_metadata__updated')
 
     def resolve_content_stats(self, args, context, info):
         return content_models.Content.get_stats_for_vertical(self.identifier)
 
     def resolve_content(self, args, context, info):
         return content_models.Content.objects.get(vertical=self.identifier, pk=args.get('content_id'))
+
+    def resolve_last_published(self, args, context, info):
+        return content_models.Content.objects\
+            .filter(vertical=self.identifier, published_revision__isnull=False)\
+            .order_by('published_date').last()
 
     def resolve_author(self, args, context, info):
         return author_models.Author.objects.get(vertical=self.identifier, slug=args.get('slug'))
@@ -330,6 +355,7 @@ class Query(graphene.ObjectType):
     media = graphene.Field(Multimedia, media_id=graphene.Int())
     notifications = graphene.Field(Notifications)
     release_notes = DjangoConnectionField(ReleaseNote.Connection)
+    content = graphene.Field(Content, content_id=graphene.Int())
 
     def resolve_vertical(self, args, context, info):
         identifier = args.get('identifier')
@@ -339,6 +365,9 @@ class Query(graphene.ObjectType):
             return None
 
         return vertical
+
+    def resolve_content(self, args, context, info):
+        return content_models.Content.objects.get(pk=args.get('content_id'))
 
     def resolve_media(self, args, context, info):
         return multimedia_models.Multimedia.objects.get(pk=args.get('media_id'))
@@ -432,8 +461,28 @@ class PostContentComment(graphene.Mutation):
             return PostContentComment(ok=False)
 
 
+class WatchContent(graphene.Mutation):
+    class Input:
+        content_id = graphene.Int()
+
+    ok = graphene.Boolean()
+    editorial_metadata = graphene.Field(EditorialMetadata)
+
+    def mutate(self, args, context, info):
+        content_id = args.get('content_id')
+
+        try:
+            content_editorial = content_models.ContentEditorialMetadata.objects\
+                .get(content=content_id)
+            content_editorial.add_watcher(context.user)
+            return WatchContent(ok=True, editorial_metadata=content_editorial)
+        except content_models.Content.DoesNotExist:
+            return WatchContent(ok=False)
+
+
 class Mutations(graphene.ObjectType):
     lock_content = LockContent.Field()
     post_content_comment = PostContentComment.Field()
+    watch_content = WatchContent.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutations)

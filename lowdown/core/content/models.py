@@ -270,6 +270,8 @@ class ContentEditorialMetadata(models.Model):
         except ContentWatcher.DoesNotExist:
             ContentWatcher.objects.create(watcher=user, content_editorial_metadata=self)
 
+    def watchers(self):
+        return ContentWatcher.objects.filter(content_editorial_metadata=self)
 
     @property
     def published(self):
