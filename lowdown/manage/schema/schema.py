@@ -293,6 +293,9 @@ class Vertical(ObjectType):
             queryset = queryset.filter(editorial_metadata__contentwatcher__watcher=context.user,
                                        editorial_metadata__contentwatcher__silent=False)
 
+        if args.get('published') is not None:
+            queryset = queryset.filter(published_revision__isnull=args.get('published'))
+
         if args.get('form') is not None:
             queryset = queryset.filter(published_revision__form=args.get('form'))
 
