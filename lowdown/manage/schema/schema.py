@@ -278,7 +278,7 @@ class ContentStats(graphene.ObjectType):
 
 
 class Vertical(ObjectType):
-    all_content = DjangoConnectionField(Content, watching=graphene.Boolean(), form=graphene.Argument(Form, required=False), tone=graphene.Argument(Tone, required=False))
+    all_content = DjangoConnectionField(Content, watching=graphene.Boolean(), published=graphene.Boolean(), form=graphene.Argument(Form, required=False), tone=graphene.Argument(Tone, required=False))
     content = graphene.Field(Content, content_id=graphene.Int())
     last_published = graphene.Field(Content, content_id=graphene.Int())
     content_stats = graphene.Field(ContentStats)
