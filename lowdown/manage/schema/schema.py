@@ -294,7 +294,7 @@ class Vertical(ObjectType):
                                        editorial_metadata__contentwatcher__silent=False)
 
         if args.get('published') is not None:
-            queryset = queryset.filter(published_revision__isnull=args.get('published'))
+            queryset = queryset.filter(published_revision__isnull=args.get('published') is False)
 
         if args.get('form') is not None:
             queryset = queryset.filter(published_revision__form=args.get('form'))
