@@ -37,6 +37,7 @@ class ImageBlock(Block):
     caption = fields.TextualContentField(default_transformer=transformers.InlinedownTextTransformer)
     source = fields.TextualContentField(default_transformer=transformers.InlinedownTextTransformer)
     sourceURL = fields.URLValueField(blank=True)
+    container = fields.ChoiceValueField(default_value='CONTAINER', choices=('CONTENT', 'CONTAINER', 'BLEED', ), blank=False)
 
 
 class CanvasBlock(Block):
