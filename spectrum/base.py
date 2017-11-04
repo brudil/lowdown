@@ -70,9 +70,10 @@ class BaseElement(object, metaclass=BaseMetaclass):
         for field_name, field in self._fields.items():
             # print(field_name, field, structure, structure[field_name])
             if field_name not in structure:
-                raise KeyError('{} not in structure {}'.format(field_name, structure))
-
-            setattr(self, field_name, field.parse(structure[field_name]))
+                setattr(self, field_name, field.create_default_value())
+                # raise KeyError('{} not in structure {}'.format(field_name, structure))
+            else:
+                setattr(self, field_name, field.parse(structure[field_name]))
 
     def is_valid(self) -> bool:
         for field_name, field in self._fields.items():

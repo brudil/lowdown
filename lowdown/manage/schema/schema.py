@@ -197,7 +197,7 @@ class ContentContent(DjangoObjectType):
     tone = graphene.Field(Tone)
 
     def resolve_document(self, args, context, info):
-        return self.spectrum_document
+        return self.get_spectrum_document_as_dict()
 
     def resolve_authors(self, args, context, info):
         return self.authors.all()

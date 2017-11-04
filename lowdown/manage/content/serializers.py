@@ -10,6 +10,15 @@ from lowdown.manage.authors.serializers import AuthorSerializer
 from lowdown.core.users.models import LowdownUser
 from lowdown.core.authors.models import Author
 from rest_framework import serializers
+from spectrum.document import SpectrumDocument
+
+
+class SpectrumDocumentSerializer(serializers.Field):
+    def to_internal_value(self, data):
+        return SpectrumDocument.from_json(data).to_json()
+
+    def to_representation(self, instance):
+        return SpectrumDocument.from_json(instance).to_json()
 
 
 class ContentRevisionSerializer(serializers.ModelSerializer):
@@ -21,6 +30,7 @@ class ContentRevisionSerializer(serializers.ModelSerializer):
     topics = serializers.PrimaryKeyRelatedField(many=True, queryset=Topic.objects.all())
     authors_nest = AuthorSerializer(read_only=True, many=True, source='authors')
     authors = serializers.PrimaryKeyRelatedField(many=True, queryset=Author.objects.all())
+    spectrum_document = SpectrumDocumentSerializer()
 
     class Meta:
         model = ContentRevision

@@ -177,6 +177,9 @@ class ContentRevision(models.Model):
     def get_spectrum_document(self):
         return SpectrumDocument.from_json(self.spectrum_document)
 
+    def get_spectrum_document_as_dict(self):
+        return SpectrumDocument.from_json(self.spectrum_document).to_json()
+
     def get_resources_for_document(self):
         document = self.get_spectrum_document()
         elements = document.get_elements()
