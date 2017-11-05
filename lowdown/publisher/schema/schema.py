@@ -208,6 +208,7 @@ class Content(DjangoObjectType):
         )
 
     content = graphene.Field(ContentContent)
+    related_content = graphene.List(lambda: Content)
     content_id = graphene.Int()
 
     def resolve_content(self, args, context, info):
@@ -216,6 +217,8 @@ class Content(DjangoObjectType):
     def resolve_content_id(self, args, context, info):
         return self.pk
 
+    def resolve_related_content(self, args, context, info):
+        return self.related_content()[:6]
 Content.Connection = connection_for_type(Content)
 
 

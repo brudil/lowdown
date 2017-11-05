@@ -106,6 +106,10 @@ class Content(models.Model):
             total_published=total_published,
         )
 
+    def related_content(self):
+        return Content.objects.filter(published_revision__isnull=False, vertical=self.vertical)\
+            .order_by('-published_date')
+
     @classmethod
     def from_revision(cls, revision_serializer, vertical, user):
         with transaction.atomic():
