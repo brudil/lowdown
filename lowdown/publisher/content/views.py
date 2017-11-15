@@ -6,11 +6,10 @@ from lowdown.core.content.models import Content
 from lowdown.publisher.content.serializers import ContentListSerializer, ContentDetailSerializer
 from lowdown.core.topics.models import Topic
 from lowdown.core.users.models import LowdownUser
-from rest_framework import filters
 from rest_framework import generics
 
 
-class ContentListFilter(filters.FilterSet):
+class ContentListFilter(django_filters.rest_framework.FilterSet):
     status = django_filters.NumberFilter(name='status')
     form = django_filters.NumberFilter(name='current_revision__form')
     tone = django_filters.NumberFilter(name='current_revision__tone')

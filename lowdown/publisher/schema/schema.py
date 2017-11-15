@@ -22,7 +22,7 @@ def connection_for_type(_type):
             name = _type._meta.name + 'Connection'
             node = _type
 
-        def resolve_total_count(self, args, context, info):
+        def resolve_total_count(self, info):
             return self.length
 
     return Connection
@@ -52,7 +52,7 @@ class Author(DjangoObjectType):
 
     all_content = DjangoConnectionField(lambda: Content)
 
-    def resolve_all_content(self, args, context, info):
+    def resolve_all_content(self, info):
         queryset = content_models.Content.objects.filter(vertical=self.vertical, published_revision__isnull=False, published_revision__authors__in=[self])
         return queryset.order_by('-published_date')
 
@@ -82,12 +82,13 @@ class Section(DjangoObjectType):
     all_content = DjangoConnectionField(lambda: Content)
     all_topics = DjangoConnectionField(Topic)
 
-    def resolve_all_content(self, args, context, info):
+    def resolve_all_content(self, info):
         queryset = content_models.Content.objects.filter(vertical=self.vertical, published_revision__isnull=False, published_revision__section=self)
         return queryset.order_by('-published_date')
 
-    def resolve_all_topics(self, args, context, info):
+    def resolve_all_topics(self, info):
         return self.topics.all()
+
 
 class Series(DjangoObjectType):
     class Meta:
@@ -97,6 +98,7 @@ class Series(DjangoObjectType):
             'title',
             'slug',
         )
+
 
 class Multimedia(DjangoObjectType):
     class Meta:
@@ -112,10 +114,10 @@ class MultimediaImage(DjangoObjectType):
     width = graphene.Int()
     height = graphene.Int()
 
-    def resolve_width(self, args, context, info):
+    def resolve_width(self, info):
         return self.media_object.width
 
-    def resolve_height(self, args, context, info):
+    def resolve_height(self, info):
         return self.media_object.height
 # def get_embedded_image(model, name):
 #     if getattr(model, name) is None:
@@ -135,7 +137,7 @@ class Interactive(DjangoObjectType):
 
     release_number = graphene.Int()
 
-    def resolve_release_number(self, args, context, info):
+    def resolve_release_number(self, info):
         latest = self.get_latest_public_release()
         if latest is None:
             return None
@@ -143,18 +145,17 @@ class Interactive(DjangoObjectType):
         return latest.revision_number
 
 
-
 class ResourceMap(ObjectType):
     lowdownimages = graphene.List(MultimediaImage)
     lowdowninteractives = graphene.List(Interactive)
 
-    def resolve_lowdownimages(self, args, context, info):
+    def resolve_lowdownimages(self, info):
         try:
             return self.lowdownimage
         except AttributeError:
             return None
 
-    def resolve_lowdowninteractives(self, args, context, info):
+    def resolve_lowdowninteractives(self, info):
         try:
             return self.lowdowninteractive
         except AttributeError:
@@ -175,22 +176,22 @@ class ContentContent(DjangoObjectType):
     form = graphene.Field(Form)
     tone = graphene.Field(Tone)
 
-    def resolve_document(self, args, context, info):
+    def resolve_document(self, info):
         return self.get_spectrum_document_as_dict()
 
-    def resolve_authors(self, args, context, info):
+    def resolve_authors(self, info):
         return self.authors.all()
 
-    def resolve_resources(self, args, context, info):
+    def resolve_resources(self, info):
         return SimpleNamespace(**self.get_resources_map())
 
-    def resolve_section(self, args, context, info):
+    def resolve_section(self, info):
         return self.section
 
-    def resolve_series(self, args, context, info):
+    def resolve_series(self, info):
         return self.series
 
-    def resolve_topics(self, args, context, info):
+    def resolve_topics(self, info):
         return self.topics.all()
 
 
@@ -211,13 +212,13 @@ class Content(DjangoObjectType):
     related_content = graphene.List(lambda: Content)
     content_id = graphene.Int()
 
-    def resolve_content(self, args, context, info):
+    def resolve_content(self, info):
         return self.published_revision
 
-    def resolve_content_id(self, args, context, info):
+    def resolve_content_id(self, info):
         return self.pk
 
-    def resolve_related_content(self, args, context, info):
+    def resolve_related_content(self, info):
         return self.related_content()[:6]
 Content.Connection = connection_for_type(Content)
 
@@ -228,26 +229,26 @@ class Vertical(ObjectType):
     author = graphene.Field(Author, slug=graphene.String())
     section = graphene.Field(Section, slug=graphene.String())
 
-    def resolve_all_content(self, args, context, info):
+    def resolve_all_content(self, info, form, tone):
         queryset = content_models.Content.objects.filter(vertical=self.identifier, published_revision__isnull=False)
 
-        if args.get('form') is not None:
-            queryset = queryset.filter(published_revision__form=args.get('form'))
+        if form is not None:
+            queryset = queryset.filter(published_revision__form=form)
 
-        if args.get('tone') is not None:
-            queryset = queryset.filter(published_revision__tone=args.get('tone'))
+        if tone is not None:
+            queryset = queryset.filter(published_revision__tone=tone)
 
 
         return queryset.order_by('-published_date')
 
-    def resolve_content(self, args, context, info):
-        return content_models.Content.objects.get(vertical=self.identifier, pk=args.get('content_id'), published_revision__isnull=False)
+    def resolve_content(self, info, content_id):
+        return content_models.Content.objects.get(vertical=self.identifier, pk=content_id, published_revision__isnull=False)
 
-    def resolve_author(self, args, context, info):
-        return author_models.Author.objects.get(vertical=self.identifier, slug=args.get('slug'))
+    def resolve_author(self, info, slug):
+        return author_models.Author.objects.get(vertical=self.identifier, slug=slug)
 
-    def resolve_section(self, args, context, info):
-        return section_models.Section.objects.get(vertical=self.identifier, slug=args.get('slug'))
+    def resolve_section(self, info, slug):
+        return section_models.Section.objects.get(vertical=self.identifier, slug=slug)
 
 
 class Query(graphene.ObjectType):
@@ -257,8 +258,7 @@ class Query(graphene.ObjectType):
     preview_content = graphene.Field(ContentContent, revision_id=graphene.Int(), preview_key=graphene.String())
     image = graphene.Field(MultimediaImage, media_id=graphene.Int())
 
-    def resolve_vertical(self, args, context, info):
-        identifier = args.get('identifier')
+    def resolve_vertical(self, info, identifier):
         vertical = verticals.MANAGER.get_by_identifier(identifier)
 
         if vertical is None:
@@ -266,11 +266,11 @@ class Query(graphene.ObjectType):
 
         return vertical
 
-    def resolve_preview_content(self, args, context, info):
-        return content_models.ContentRevision.objects.get(pk=args.get('revision_id'), preview_key=args.get('preview_key'))
+    def resolve_preview_content(self, info, revision_id, preview_key):
+        return content_models.ContentRevision.objects.get(pk=revision_id, preview_key=preview_key)
 
-    def resolve_image(self, args, context, info):
-        return multimedia_models.Multimedia.objects.get(pk=args.get('media_id'))
+    def resolve_image(self, info, media_id):
+        return multimedia_models.Multimedia.objects.get(pk=media_id)
 
         # def resolve_current_slate(self, args, context, info):
     #     return show_models.ShowsConfiguration.objects.get().current_slate

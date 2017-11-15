@@ -1,5 +1,3 @@
-import json
-import django_filters
 from django.db import transaction
 from lowdown.core.content.models import Content, ContentRevision, ContentEditorialMetadata
 from lowdown.core.authors.models import Author
@@ -8,13 +6,14 @@ from lowdown.manage.content.serializers import ContentEditorialMetadataSerialize
 from lowdown.core.topics.models import Topic
 from lowdown.core.users.models import LowdownUser
 from django.shortcuts import get_object_or_404
+import django_filters
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-class ContentListFilter(filters.FilterSet):
+class ContentListFilter(django_filters.rest_framework.FilterSet):
     status = django_filters.NumberFilter(name='current_revision__status')
     form = django_filters.NumberFilter(name='current_revision__form')
     tone = django_filters.NumberFilter(name='current_revision__tone')
@@ -34,7 +33,7 @@ class ContentListFilter(filters.FilterSet):
 class ListCreateContent(generics.ListAPIView):
     serializer_class = ContentEditorialMetadataSerializer
     filter_class = ContentListFilter
-    filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter, )
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, )
     search_fields = ('current_revision__headline', )
 
     def get_queryset(self):

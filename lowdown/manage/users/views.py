@@ -1,7 +1,5 @@
-import django_filters
 from lowdown.core.users.models import LowdownUser
 from .serializers import UserSerializer
-from rest_framework import filters
 from rest_framework import generics
 from rest_framework.decorators import api_view
 
