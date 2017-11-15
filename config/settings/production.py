@@ -14,7 +14,7 @@ INSTALLED_APPS += (
 ALLOWED_HOSTS += (
     '.herokuapp.com',
     'platform.theprate.com',
-    'platform.thedrab.com',
+    'platform.thedrab.co',
 )
 
 # CORS_ORIGIN_ALLOW_ALL = True
