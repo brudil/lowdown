@@ -25,7 +25,7 @@ def connection_for_type(_type):
             name = _type._meta.name + 'Connection'
             node = _type
 
-        def resolve_total_count(self, args, context, info):
+        def resolve_total_count(self, info):
             return self.length
 
     return Connection
@@ -381,8 +381,7 @@ class Query(graphene.ObjectType):
     release_notes = DjangoConnectionField(ReleaseNote)
     content = graphene.Field(Content, content_id=graphene.Int())
 
-    def resolve_vertical(self, args, context, info):
-        identifier = args.get('identifier')
+    def resolve_vertical(self, info, identifier=None):
         vertical = verticals.MANAGER.get_by_identifier(identifier)
 
         if vertical is None:
