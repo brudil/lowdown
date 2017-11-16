@@ -52,7 +52,7 @@ class Author(DjangoObjectType):
 
     all_content = DjangoConnectionField(lambda: Content)
 
-    def resolve_all_content(self, info):
+    def resolve_all_content(self, info, **kwargs):
         queryset = content_models.Content.objects.filter(vertical=self.vertical, published_revision__isnull=False, published_revision__authors__in=[self])
         return queryset.order_by('-published_date')
 
@@ -82,11 +82,11 @@ class Section(DjangoObjectType):
     all_content = DjangoConnectionField(lambda: Content)
     all_topics = DjangoConnectionField(Topic)
 
-    def resolve_all_content(self, info):
+    def resolve_all_content(self, info, **kwargs):
         queryset = content_models.Content.objects.filter(vertical=self.vertical, published_revision__isnull=False, published_revision__section=self)
         return queryset.order_by('-published_date')
 
-    def resolve_all_topics(self, info):
+    def resolve_all_topics(self, info, **kwargs):
         return self.topics.all()
 
 
@@ -229,7 +229,7 @@ class Vertical(ObjectType):
     author = graphene.Field(Author, slug=graphene.String())
     section = graphene.Field(Section, slug=graphene.String())
 
-    def resolve_all_content(self, info, form=None, tone=None):
+    def resolve_all_content(self, info, form=None, tone=None, **kwargs):
         queryset = content_models.Content.objects.filter(vertical=self.identifier, published_revision__isnull=False)
 
         if form is not None:
