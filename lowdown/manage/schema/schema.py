@@ -172,7 +172,6 @@ class Interactive(DjangoObjectType):
         return latest.revision_number
 
 
-
 class ResourceMap(ObjectType):
     lowdownimages = graphene.List(MultimediaImage)
     lowdowninteractives = graphene.List(Interactive)
@@ -337,7 +336,7 @@ class Vertical(ObjectType):
     def resolve_section(self, info, slug=None):
         return section_models.Section.objects.get(vertical=self.identifier, slug=slug)
 
-    def resolve_all_media(self, info):
+    def resolve_all_media(self, info,  **kwargs):
         return multimedia_models.Multimedia.objects\
             .filter(vertical=self.identifier, deleted=False)\
             .order_by('-created')
@@ -398,7 +397,7 @@ class Query(graphene.ObjectType):
     def resolve_notifications(self, info):
         return {}
 
-    def resolve_release_notes(self, info):
+    def resolve_release_notes(self, info, **kwargs):
         return releasenotes_models.ReleaseNote.objects.filter(deleted=False).order_by('-created')
 
 # todo: Mutation: MarkNotificationsAsRead
