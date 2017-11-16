@@ -39,6 +39,7 @@ celery==3.1.25
 
 # Your custom requirements go here
 
+graphene
 graphene-django
 djangorestframework
 djangorestframework-camel-case

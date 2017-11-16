@@ -229,7 +229,7 @@ class Vertical(ObjectType):
     author = graphene.Field(Author, slug=graphene.String())
     section = graphene.Field(Section, slug=graphene.String())
 
-    def resolve_all_content(self, info, form, tone):
+    def resolve_all_content(self, info, form=None, tone=None):
         queryset = content_models.Content.objects.filter(vertical=self.identifier, published_revision__isnull=False)
 
         if form is not None:
@@ -238,16 +238,15 @@ class Vertical(ObjectType):
         if tone is not None:
             queryset = queryset.filter(published_revision__tone=tone)
 
-
         return queryset.order_by('-published_date')
 
-    def resolve_content(self, info, content_id):
+    def resolve_content(self, info, content_id=None):
         return content_models.Content.objects.get(vertical=self.identifier, pk=content_id, published_revision__isnull=False)
 
-    def resolve_author(self, info, slug):
+    def resolve_author(self, info, slug=None):
         return author_models.Author.objects.get(vertical=self.identifier, slug=slug)
 
-    def resolve_section(self, info, slug):
+    def resolve_section(self, info, slug=None):
         return section_models.Section.objects.get(vertical=self.identifier, slug=slug)
 
 
@@ -258,7 +257,7 @@ class Query(graphene.ObjectType):
     preview_content = graphene.Field(ContentContent, revision_id=graphene.Int(), preview_key=graphene.String())
     image = graphene.Field(MultimediaImage, media_id=graphene.Int())
 
-    def resolve_vertical(self, info, identifier):
+    def resolve_vertical(self, info, identifier=None):
         vertical = verticals.MANAGER.get_by_identifier(identifier)
 
         if vertical is None:
@@ -266,10 +265,10 @@ class Query(graphene.ObjectType):
 
         return vertical
 
-    def resolve_preview_content(self, info, revision_id, preview_key):
+    def resolve_preview_content(self, info, revision_id=None, preview_key=None):
         return content_models.ContentRevision.objects.get(pk=revision_id, preview_key=preview_key)
 
-    def resolve_image(self, info, media_id):
+    def resolve_image(self, info, media_id=None):
         return multimedia_models.Multimedia.objects.get(pk=media_id)
 
         # def resolve_current_slate(self, args, context, info):

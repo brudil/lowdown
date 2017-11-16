@@ -300,7 +300,7 @@ class Vertical(ObjectType):
     section = graphene.Field(Section, slug=graphene.String())
     all_media = DjangoConnectionField(Multimedia)
 
-    def resolve_all_content(self, info, watching, published, form, tone):
+    def resolve_all_content(self, info, watching=None, published=None, form=None, tone=None):
         queryset = content_models.Content.objects.filter(vertical=self.identifier)
 
         if watching is not None and watching is True:
@@ -323,7 +323,7 @@ class Vertical(ObjectType):
     def resolve_content_stats(self, info):
         return content_models.Content.get_stats_for_vertical(self.identifier)
 
-    def resolve_content(self, info, content_id):
+    def resolve_content(self, info, content_id=None):
         return content_models.Content.objects.get(vertical=self.identifier, pk=content_id)
 
     def resolve_last_published(self, info):
@@ -331,10 +331,10 @@ class Vertical(ObjectType):
             .filter(vertical=self.identifier, published_revision__isnull=False)\
             .order_by('published_date').last()
 
-    def resolve_author(self, info, slug):
+    def resolve_author(self, info, slug=None):
         return author_models.Author.objects.get(vertical=self.identifier, slug=slug)
 
-    def resolve_section(self, info, slug):
+    def resolve_section(self, info, slug=None):
         return section_models.Section.objects.get(vertical=self.identifier, slug=slug)
 
     def resolve_all_media(self, info):
@@ -390,10 +390,10 @@ class Query(graphene.ObjectType):
 
         return vertical
 
-    def resolve_content(self, info, content_id):
+    def resolve_content(self, info, content_id=None):
         return content_models.Content.objects.get(pk=content_id)
 
-    def resolve_media(self, info, media_id):
+    def resolve_media(self, info, media_id=None):
         return multimedia_models.Multimedia.objects.get(pk=media_id)
 
     def resolve_notifications(self, info):
@@ -422,7 +422,7 @@ class LockContent(graphene.Mutation):
 
     ok = graphene.Boolean()
 
-    def mutate(self, info, content_id):
+    def mutate(self, info, content_id=None):
         content_id = graphene.Int()
         try:
             content = content_models.Content.objects.get(pk=content_id)
@@ -445,7 +445,7 @@ class PostContentComment(graphene.Mutation):
     ok = graphene.Boolean()
     comment = graphene.Field(ContentComment)
 
-    def mutate(self, info, data):
+    def mutate(self, info, data=None):
         try:
             content_revision = content_models.ContentRevision.objects.get(id=data['revision_id'])
             comment = content_revision.add_comment(info.context.user, data['comment'])
@@ -461,7 +461,7 @@ class WatchContent(graphene.Mutation):
     ok = graphene.Boolean()
     editorial_metadata = graphene.Field(EditorialMetadata)
 
-    def mutate(self, info, content_id):
+    def mutate(self, info, content_id=None):
         try:
             content_editorial = content_models.ContentEditorialMetadata.objects\
                 .get(content=content_id)
@@ -480,7 +480,7 @@ class EditMedia(graphene.Mutation):
     ok = graphene.Boolean()
     media = graphene.Field(Multimedia)
 
-    def mutate(self, info, media_id, credit_title, credit_url):
+    def mutate(self, info, media_id=None, credit_title=None, credit_url=None):
         try:
             media = multimedia_models.Multimedia.objects\
                 .get(pk=media_id)
@@ -502,7 +502,7 @@ class DeleteMedia(graphene.Mutation):
     ok = graphene.Boolean()
     media = graphene.Field(Multimedia)
 
-    def mutate(self, info, media_id):
+    def mutate(self, info, media_id=None):
         try:
             media = multimedia_models.Multimedia.objects\
                 .get(pk=media_id)
@@ -523,7 +523,7 @@ class UndeleteMedia(graphene.Mutation):
     ok = graphene.Boolean()
     media = graphene.Field(Multimedia)
 
-    def mutate(self, info, media_id):
+    def mutate(self, info, media_id=None):
         try:
             media = multimedia_models.Multimedia.objects\
                 .get(pk=media_id)
