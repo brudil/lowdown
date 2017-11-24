@@ -253,7 +253,7 @@ class EditorialMetadata(DjangoObjectType):
         return self.comments()
 
     def resolve_watchers(self, info):
-        return self.watchers()
+        return self.get_watchers()
 
 
 class Content(DjangoObjectType):
@@ -299,8 +299,12 @@ class Vertical(ObjectType):
     section = graphene.Field(Section, slug=graphene.String())
     all_media = DjangoConnectionField(Multimedia)
 
-    def resolve_all_content(self, info, watching=None, published=None, form=None, tone=None):
+    def resolve_all_content(self, info, **kwargs):
         queryset = content_models.Content.objects.filter(vertical=self.identifier)
+        watching = kwargs.get('watching') or None
+        published = kwargs.get('published') or None
+        form = kwargs.get('form') or None
+        tone = kwargs.get('tone') or None
 
         if watching is not None and watching is True:
             queryset = queryset.filter(
