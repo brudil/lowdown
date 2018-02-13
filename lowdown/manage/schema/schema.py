@@ -312,14 +312,14 @@ class Vertical(ObjectType):
                 editorial_metadata__contentwatcher__silent=False
             )
 
-        if published is not None:
-            queryset = queryset.filter(published_revision__isnull=(False if published is False else True))
-
         if form is not None:
             queryset = queryset.filter(published_revision__form=form)
 
         if tone is not None:
             queryset = queryset.filter(published_revision__tone=tone)
+
+        if published is not None:
+            queryset = queryset.filter(published_revision__isnull=(True if published is False else False))
 
         return queryset.order_by('-editorial_metadata__updated')
 
