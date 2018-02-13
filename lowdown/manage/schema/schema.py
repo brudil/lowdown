@@ -302,7 +302,7 @@ class Vertical(ObjectType):
     def resolve_all_content(self, info, **kwargs):
         queryset = content_models.Content.objects.filter(vertical=self.identifier)
         watching = kwargs.get('watching') or None
-        published = kwargs.get('published') or None
+        published = kwargs.get('published', None)
         form = kwargs.get('form') or None
         tone = kwargs.get('tone') or None
 
@@ -313,7 +313,7 @@ class Vertical(ObjectType):
             )
 
         if published is not None:
-            queryset = queryset.filter(published_revision__isnull=published is False)
+            queryset = queryset.filter(published_revision__isnull=(False if published is False else True))
 
         if form is not None:
             queryset = queryset.filter(published_revision__form=form)
