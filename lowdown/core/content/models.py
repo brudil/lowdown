@@ -249,6 +249,12 @@ class ContentComment(models.Model):
 class ContentEditorialMetadata(models.Model):
     class Meta:
         db_table = 'content_editorial_metadata'
+        permissions = (
+            ('finalize_content', 'Can finalize'),
+            ('publish', 'Can publish'),
+            ('save_watching', 'Can save watching'),
+            ('save_any', 'Can save any'),
+        )
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -260,7 +266,9 @@ class ContentEditorialMetadata(models.Model):
 
     revision_count = models.IntegerField(default=0, null=False)
 
-    watchers = models.ManyToManyField(to='users.LowdownUser', through='content.ContentWatcher')
+    relevant_date = models.DateTimeField(null=True, blank=True, default=None)
+
+    watchers = models.ManyToManyField('users.LowdownUser', through='content.ContentWatcher')
 
     def __str__(self):
         return 'Content Editorial Metadata #{}'.format(self.content.pk)
@@ -286,7 +294,7 @@ class ContentEditorialMetadata(models.Model):
         except ContentWatcher.DoesNotExist:
             ContentWatcher.objects.create(watcher=user, content_editorial_metadata=self)
 
-    def watchers(self):
+    def get_watchers(self):
         return ContentWatcher.objects.filter(content_editorial_metadata=self)
 
     @property
