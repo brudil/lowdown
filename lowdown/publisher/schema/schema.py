@@ -1,3 +1,5 @@
+import random
+
 from graphene import ObjectType, Node
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType, DjangoConnectionField
@@ -219,7 +221,10 @@ class Content(DjangoObjectType):
         return self.pk
 
     def resolve_related_content(self, info):
-        return self.related_content()[:6]
+        related = [x for x in self.related_content()[:7] if x.pk != self.pk][:6]
+        random.shuffle(related)
+        return related
+
 Content.Connection = connection_for_type(Content)
 
 
