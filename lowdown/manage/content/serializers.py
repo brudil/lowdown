@@ -118,6 +118,7 @@ class ContentRevisionListSerializer(serializers.ModelSerializer):
             'tone',
             'form',
             'status',
+            'slug'
         )
 
 
