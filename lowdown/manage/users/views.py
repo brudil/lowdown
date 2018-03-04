@@ -1,5 +1,5 @@
 from lowdown.core.users.models import LowdownUser
-from .serializers import UserSerializer
+from .serializers import UserSerializer, SelfUserSerializer
 from rest_framework import generics
 from rest_framework.decorators import api_view
 
@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 @api_view(['GET', ])
 def detail_current_user(request):
-    return Response(UserSerializer(request.user).data)
+    return Response(SelfUserSerializer(request.user).data)
 
 #
 # class UsersFilter(filters.FilterSet):

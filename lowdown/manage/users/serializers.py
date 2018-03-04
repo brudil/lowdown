@@ -16,6 +16,13 @@ class PermissionSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LowdownUser
+        fields = ('id', 'username', 'first_name', 'last_name', 'gravatar_hash')
+
+
+class SelfUserSerializer(serializers.ModelSerializer):
     permissions = PermissionSerializer(many=True)
 
     class Meta:
