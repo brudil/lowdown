@@ -7,3 +7,4 @@ class VerticalSerializer(serializers.Serializer):
     audience = serializers.CharField()
     content_forms = serializers.ListField(child=serializers.IntegerField())
     content_tones = serializers.ListField(child=serializers.IntegerField())
+    channels = serializers.ListField(child=serializers.CharField())

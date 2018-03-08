@@ -147,6 +147,7 @@ class ContentRevision(models.Model):
     series = models.ForeignKey('series.Series', null=True, blank=True,  default=None, related_name='content_revisions')
     section = models.ForeignKey('sections.Section', null=True, blank=True, default=None, related_name='content_revisions')
     topics = models.ManyToManyField('topics.Topic', blank=True, related_name='content_revisions')
+    channel = models.CharField(max_length=12, default='MAIN')
     users = models.ManyToManyField('users.LowdownUser', blank=True, related_name='content_revisions')
     authors = models.ManyToManyField('authors.Author', blank=True, related_name='content_revisions')
 

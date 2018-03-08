@@ -60,6 +60,7 @@ class ContentRevisionSerializer(serializers.ModelSerializer):
             'slug',
             'tone',
             'form',
+            'channel',
             'status',
             'preview_key',
 
@@ -91,6 +92,7 @@ class ContentRevisionLocalSerializer(serializers.ModelSerializer):
             'slug',
             'tone',
             'form',
+            'channel',
             'status',
 
             'spectrum_document'
@@ -117,6 +119,7 @@ class ContentRevisionListSerializer(serializers.ModelSerializer):
             'headline',
             'tone',
             'form',
+            'channel',
             'status',
             'slug'
         )

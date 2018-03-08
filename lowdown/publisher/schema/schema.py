@@ -229,12 +229,12 @@ Content.Connection = connection_for_type(Content)
 
 
 class Vertical(ObjectType):
-    all_content = DjangoConnectionField(Content, form=graphene.Argument(Form, required=False), tone=graphene.Argument(Tone, required=False))
+    all_content = DjangoConnectionField(Content, form=graphene.Argument(Form, required=False), tone=graphene.Argument(Tone, required=False), channel=graphene.String())
     content = graphene.Field(Content, content_id=graphene.Int())
     author = graphene.Field(Author, slug=graphene.String())
     section = graphene.Field(Section, slug=graphene.String())
 
-    def resolve_all_content(self, info, form=None, tone=None, **kwargs):
+    def resolve_all_content(self, info, form=None, tone=None, channel=None, **kwargs):
         queryset = content_models.Content.objects.filter(vertical=self.identifier, published_revision__isnull=False)
 
         if form is not None:
@@ -242,6 +242,9 @@ class Vertical(ObjectType):
 
         if tone is not None:
             queryset = queryset.filter(published_revision__tone=tone)
+
+        if channel is not None:
+            queryset = queryset.filter(published_revision__channel=channel)
 
         return queryset.order_by('-published_date')
 

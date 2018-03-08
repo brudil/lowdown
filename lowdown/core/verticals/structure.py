@@ -46,6 +46,10 @@ class ThePrate(Vertical):
         constants.TONE_GUIDE,
     ]
 
+    channels = [
+        'MAIN',
+    ]
+
 
 class TheDrab(Vertical):
     name = 'The Drab'
@@ -63,6 +67,11 @@ class TheDrab(Vertical):
         constants.TONE_REVIEW,
         constants.TONE_STORYTELLING,
         constants.TONE_VIEWPOINT,
+    ]
+
+    channels = [
+        'MAIN',
+        'BITCH',
     ]
 
 
