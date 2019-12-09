@@ -15,7 +15,7 @@ class Interactive(models.Model):
         return self.releases.filter(public=True).latest('created')
 
 class InteractiveRelease(models.Model):
-    interactive = models.ForeignKey(Interactive, null=False, related_name='releases')
+    interactive = models.ForeignKey(Interactive, null=False, related_name='releases', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     revision_number = models.PositiveIntegerField(null=False, default=0)
 

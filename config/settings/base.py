@@ -1,6 +1,6 @@
 import environ
 
-ROOT_DIR = environ.Path(__file__) - 3  # (falmer/config/settings/base.py - 3 = falmer/)
+ROOT_DIR = environ.Path(__file__) - 3  # (lowdown/config/settings/base.py - 3 = lowdown/)
 APPS_DIR = ROOT_DIR.path('lowdown')
 
 env = environ.Env()
@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'taggit',
+    'rolepermissions',
     'graphene_django',
 
     # core
@@ -69,7 +70,6 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
@@ -126,7 +126,7 @@ AUTH_USER_MODEL = 'users.LowdownUser'
 DEBUG = env.bool('DJANGO_DEBUG', False)
 
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='postgis:///falmer'),
+    'default': env.db('DATABASE_URL', default='postgres:///lowdown'),
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
@@ -217,3 +217,5 @@ JWT_AUTH = {
 }
 
 CORS_EXPOSE_HEADERS = ['content-type', 'content-length']
+
+ROLEPERMISSIONS_MODULE = 'config.roles'

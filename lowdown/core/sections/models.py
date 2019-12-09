@@ -10,7 +10,7 @@ class Section(models.Model):
     updated = models.DateTimeField(auto_now=True)
     vertical = VerticalField()
 
-    parent = models.ForeignKey('self', null=True, blank=True, default=None)
+    parent = models.ForeignKey('self', null=True, blank=True, default=None, on_delete=models.CASCADE)
 
     title = models.TextField(null=False)
     slug = models.SlugField(unique=False, null=False, blank=False)

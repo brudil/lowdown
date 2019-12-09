@@ -4,7 +4,7 @@ from lowdown.core.users.models import LowdownUser
 
 
 class ReleaseNote(models.Model):
-    user = models.ForeignKey(LowdownUser)
+    user = models.ForeignKey(LowdownUser, null=True, on_delete=models.SET_NULL)
     version_number = models.CharField(max_length=32)
     body = models.TextField(default='')
     created = models.DateTimeField(auto_now_add=True)

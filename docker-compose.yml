@@ -42,7 +42,7 @@ services:
     depends_on:
      - postgres
      - redis
-    command: celery -A falmer.taskapp worker -l INFO
+    command: celery -A lowdown.taskapp worker -l INFO
 
   celerybeat:
     build:
@@ -52,5 +52,5 @@ services:
     depends_on:
       - postgres
       - redis
-    command: celery -A falmer.taskapp beat -l INFO
+    command: celery -A lowdown.taskapp beat -l INFO
 

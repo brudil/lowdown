@@ -77,7 +77,7 @@ class Multimedia(models.Model):
     source_method = models.CharField(max_length=4, choices=SOURCE_METHOD_CHOICES, default='UPLD')
     metadata = JSONField(default={}, blank=True)
 
-    uploader = models.ForeignKey('users.LowdownUser', related_name='multimedia')
+    uploader = models.ForeignKey('users.LowdownUser', null=True, related_name='multimedia', on_delete=models.SET_NULL)
     tags = TaggableManager(blank=True)
 
     deleted = models.BooleanField(default=False)

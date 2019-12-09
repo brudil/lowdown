@@ -62,7 +62,7 @@ class Content(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    published_revision = models.ForeignKey('content.ContentRevision', null=True, blank=True, related_name='published')
+    published_revision = models.ForeignKey('content.ContentRevision', null=True, blank=True, related_name='published', on_delete=models.SET_NULL)
     published_slug = models.SlugField(max_length=60, null=True, blank=True, unique=False)
 
     published_date = models.DateTimeField(null=True)
@@ -141,11 +141,11 @@ class ContentRevision(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     revision_number = models.PositiveIntegerField(null=False, default=0)
-    created_by = models.ForeignKey('users.LowdownUser', null=True, related_name='revisions')
+    created_by = models.ForeignKey('users.LowdownUser', null=True, related_name='revisions', on_delete=models.SET_NULL)
 
-    content = models.ForeignKey('content.Content', db_index=True, null=False, related_name='revisions')
-    series = models.ForeignKey('series.Series', null=True, blank=True,  default=None, related_name='content_revisions')
-    section = models.ForeignKey('sections.Section', null=True, blank=True, default=None, related_name='content_revisions')
+    content = models.ForeignKey('content.Content', db_index=True, null=False, related_name='revisions', on_delete=models.CASCADE)
+    series = models.ForeignKey('series.Series', null=True, blank=True,  default=None, related_name='content_revisions', on_delete=models.SET_NULL)
+    section = models.ForeignKey('sections.Section', null=True, blank=True, default=None, related_name='content_revisions', on_delete=models.SET_NULL)
     topics = models.ManyToManyField('topics.Topic', blank=True, related_name='content_revisions')
     channel = models.CharField(max_length=12, default='MAIN')
     users = models.ManyToManyField('users.LowdownUser', blank=True, related_name='content_revisions')
@@ -157,7 +157,7 @@ class ContentRevision(models.Model):
     kicker = models.TextField(null=False, blank=True)
     standfirst = models.TextField(null=False, blank=True)
 
-    poster_image = models.ForeignKey('multimedia.Multimedia', null=True, blank=True)
+    poster_image = models.ForeignKey('multimedia.Multimedia', null=True, blank=True, on_delete=models.SET_NULL)
 
     status = models.SmallIntegerField(choices=constants.STATUS_CHOICES, null=False, default=constants.STATUS_DRAFT)
 
@@ -239,8 +239,8 @@ class ContentRevision(models.Model):
 
 
 class ContentComment(models.Model):
-    revision = models.ForeignKey(ContentRevision)
-    user = models.ForeignKey('users.LowdownUser', related_name='content_comments')
+    revision = models.ForeignKey(ContentRevision, on_delete=models.CASCADE)
+    user = models.ForeignKey('users.LowdownUser', related_name='content_comments', on_delete=models.CASCADE)
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -260,8 +260,8 @@ class ContentEditorialMetadata(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    content = models.OneToOneField('content.Content', related_name='editorial_metadata')
-    current_revision = models.OneToOneField('content.ContentRevision')
+    content = models.OneToOneField('content.Content', related_name='editorial_metadata', on_delete=models.CASCADE)
+    current_revision = models.OneToOneField('content.ContentRevision', null=True, on_delete=models.SET_NULL)
 
     locked_at = models.DateTimeField(null=True, blank=True, default=None)
 
@@ -304,8 +304,8 @@ class ContentEditorialMetadata(models.Model):
 
 
 class ContentWatcher(models.Model):
-    content_editorial_metadata = models.ForeignKey(ContentEditorialMetadata)
-    watcher = models.ForeignKey('users.LowdownUser', related_name='watching_content')
+    content_editorial_metadata = models.ForeignKey(ContentEditorialMetadata, on_delete=models.CASCADE)
+    watcher = models.ForeignKey('users.LowdownUser', related_name='watching_content', on_delete=models.CASCADE)
     silent = models.BooleanField(default=False)
 
     class Meta:

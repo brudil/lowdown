@@ -8,7 +8,7 @@ class Topic(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    section = models.ForeignKey('sections.Section', null=False, related_name='topics')
+    section = models.ForeignKey('sections.Section', null=False, related_name='topics', on_delete=models.CASCADE)
 
     title = models.TextField(null=False)
     slug = models.SlugField(null=False, blank=False)
