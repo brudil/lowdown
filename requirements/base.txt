@@ -41,7 +41,7 @@ celery==4.3.0
 
 graphene==2.1.8
 graphene-django==2.7.1
-djangorestframework==3.10.3
+djangorestframework==3.11.2
 djangorestframework-camel-case==1.1.2
 Markdown==3.1.1
 django-cors-headers==3.2.0
