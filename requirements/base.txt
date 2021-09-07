@@ -16,7 +16,7 @@ whitenoise==4.1.4
 django-model-utils==3.2.0
 
 # Images
-Pillow==6.2.1
+Pillow==8.3.2
 
 # Password storage
 argon2-cffi==19.2.0
